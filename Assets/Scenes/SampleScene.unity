@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
-  - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -583,7 +583,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!114 &330585548
+--- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -592,13 +592,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42f24340de952cd4f9d227f101927015, type: 3}
+  m_Script: {fileID: 11500000, guid: acc5b946757cb4d42a86e7c76d70c545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 774584232}
-  orbitPos: {fileID: 1541357213}
-  rotSmoothSpeed: 0.2
-  posSmoothSpeed: 0.5
+  focus: {fileID: 774584232}
+  focusRadius: 1
+  focusCentering: 0.5
+  rotationSpeed: 90
+  minVerticalAngle: -30
+  maxVerticalAngle: 60
+  alignDelay: 5
+  alignSmoothRange: 45
+  distance: 5
 --- !u!1 &394895350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1218,12 +1223,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190154388a6820e48a03805d5950dcdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformingAccel: 20
-  platformingjumpForce: 200
-  maxPlatformingSpeed: 10
+  platformingMaxSpeed: 5
+  platformingMaxAccel: 0.5
+  platformingMaxAirAccel: 0.05
+  platformingJumpHeight: 2
+  platformingMaxGroundAngle: 40
+  platformingMaxSnapSpeed: 100
+  platformingSnapProbeDist: 1
+  platformingProbeMask:
+    serializedVersion: 2
+    m_Bits: 55
+  maxAirJumps: 1
   cameraSpeed: 0.3
   speedAccel: 15
   speedJumpForce: 500
+  platformInputSpace: {fileID: 330585546}
+  speedInputSpace: {fileID: 0}
   physicsMovementBody: {fileID: 774584234}
   bodyVisual: {fileID: 1263067910}
   cameraOrbitRot: {fileID: 1215286438}
@@ -1253,7 +1268,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

@@ -1218,7 +1218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190154388a6820e48a03805d5950dcdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformingAccel: 8
+  platformingAccel: 20
   platformingjumpForce: 200
   maxPlatformingSpeed: 10
   cameraSpeed: 0.3
@@ -1236,7 +1236,7 @@ Rigidbody:
   m_GameObject: {fileID: 774584231}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 0.1
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}

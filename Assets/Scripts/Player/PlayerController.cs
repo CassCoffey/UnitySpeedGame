@@ -63,6 +63,12 @@ public class PlayerController : MonoBehaviour
         moveValue = moveAction.ReadValue<Vector2>();
         moveValue3D = new Vector3(moveValue.x, 0, moveValue.y);
 
+        if (!SpeedMode)
+        {
+            // adjust movement to camera in platforming mode
+            moveValue3D = Quaternion.AngleAxis(lookDir3D.y, Vector3.up) * moveValue3D;
+        }
+
         steerValue = steerAction.ReadValue<float>();
         accelerateValue = accelerateAction.ReadValue<float>();
         brakeValue = brakeAction.ReadValue<float>();
@@ -104,10 +110,7 @@ public class PlayerController : MonoBehaviour
 
         if (grounded)
         {
-            if (physicsMovementBody.linearVelocity.magnitude < maxPlatformingSpeed)
-            {
-                physicsMovementBody.AddForce(orthoNormMove * platformingAccel);
-            }
+            physicsMovementBody.AddForce(orthoNormMove * platformingAccel);
 
             if (jumpReleased)
             {

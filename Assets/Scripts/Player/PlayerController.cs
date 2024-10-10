@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,10 +18,13 @@ public class PlayerController : MonoBehaviour
     public LayerMask platformingProbeMask = -1;
     public int maxAirJumps = 1;
 
-    public float cameraSpeed = 0.5f;
+    Vector3 facing;
 
-    public float speedAccel = 15f;
+    public float speedAccel = 10f;
+    public float speedMaxAccel = 15f;
     public float speedJumpForce = 500f;
+
+    public float cameraSpeed = 0.5f;
 
     public Transform platformInputSpace = default;
     public Transform speedInputSpace = default;
@@ -30,8 +34,6 @@ public class PlayerController : MonoBehaviour
 
     bool SpeedMode = false;
 
-    Vector3 heading;
-    Vector3 orthoNormMove;
     Vector3 contactNormal, steepNormal;
     int groundContactCount, steepContactCount;
     bool grounded => groundContactCount > 0;
@@ -40,6 +42,8 @@ public class PlayerController : MonoBehaviour
     int jumpPhase;
     float minGroundDotProduct;
     int stepsSinceLastGrounded, stepsSinceLastJump;
+
+    Vector3 gravity, upAxis, rightAxis, forwardAxis;
 
     Vector3 velocity = Vector3.zero;
 
@@ -60,6 +64,11 @@ public class PlayerController : MonoBehaviour
 
     List<Collider> nearbyObjects = new List<Collider>();
 
+    private void Awake()
+    {
+        physicsMovementBody.useGravity = false;
+    }
+
     void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
@@ -74,26 +83,21 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         moveValue = moveAction.ReadValue<Vector2>();
+        moveValue3D = new Vector3(moveValue.x, 0f, moveValue.y);
 
-        if (platformInputSpace)
+        Transform inputSpace = platformInputSpace;
+        if (SpeedMode) inputSpace = speedInputSpace;
+        
+        if (inputSpace)
         {
-            Vector3 forward = platformInputSpace.forward;
-            forward.y = 0f;
-            forward.Normalize();
-            Vector3 right = platformInputSpace.right;
-            right.y = 0f;
-            right.Normalize();
-            moveValue3D = (forward * moveValue.y + right * moveValue.x);
-        } 
+            rightAxis = ProjectDirectionOnPlane(inputSpace.right, upAxis);
+            forwardAxis =
+                ProjectDirectionOnPlane(inputSpace.forward, upAxis);
+        }
         else
         {
-            moveValue3D = new Vector3(moveValue.x, 0, moveValue.y);
-        }
-
-        if (!SpeedMode)
-        {
-            // adjust movement to camera in platforming mode
-            //moveValue3D = Quaternion.AngleAxis(lookDir3D.y, Vector3.up) * moveValue3D;
+            rightAxis = ProjectDirectionOnPlane(Vector3.right, upAxis);
+            forwardAxis = ProjectDirectionOnPlane(Vector3.forward, upAxis);
         }
 
         steerValue = steerAction.ReadValue<float>();
@@ -110,7 +114,19 @@ public class PlayerController : MonoBehaviour
             jumpReleased = true;
         }
 
-        bodyVisual.LookAt(transform.position + orthoNormMove, SpeedMode ? contactNormal : Vector3.up);
+        if (SpeedMode)
+        {
+            bodyVisual.LookAt(transform.position + facing, upAxis);
+        } 
+        else
+        {
+            facing = platformInputSpace.TransformDirection(moveValue3D);
+            facing.y = 0f;
+
+            facing.Normalize();
+
+            bodyVisual.LookAt(transform.position + facing, upAxis);
+        }
      }
 
     private void FixedUpdate()
@@ -120,11 +136,10 @@ public class PlayerController : MonoBehaviour
 
         if (SpeedMode)
         {
-            CheckWallrunning();
+            //CheckWallrunning();
             if (jumpReleased)
             {
-                Vector3 jumpVelocity = contactNormal * Mathf.Sqrt(-2f * Physics.gravity.y * platformingJumpHeight);
-                velocity += jumpVelocity;
+                SpeedJump();
             }
         }
         else
@@ -155,11 +170,19 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateState()
     {
+        gravity = CustomGravity.GetGravity(transform.position, out upAxis);
+
         stepsSinceLastGrounded++;
         stepsSinceLastJump++;
 
-        heading = physicsMovementBody.linearVelocity.normalized;
-        orthoNormMove = moveValue3D;
+        if (accelerateValue > 0.1f)
+        {
+            SpeedMode = true;
+        } 
+        else if (brakeValue < 0.1f && physicsMovementBody.linearVelocity.magnitude <= 1f)
+        {
+            SpeedMode = false;
+        }
 
         if (grounded || SnapToGround() || CheckSteepContacts())
         {
@@ -168,40 +191,82 @@ public class PlayerController : MonoBehaviour
             {
                 jumpPhase = 0;
             }
-            contactNormal.Normalize();
+            if (groundContactCount > 1)
+            {
+                contactNormal.Normalize();
+            }
         }
         else
         {
-            contactNormal = Vector3.up;
+            contactNormal = upAxis;
         }
-
-        //if (accelerateValue > 0.1f)
-        //{
-        //    SpeedMode = true;
-        //}
     }
 
     private void UpdateForces()
     {
+        if (SpeedMode)
+        {
+            UpdateSpeedForces();
+        } 
+        else
+        {
+            UpdatePlatformingForces();
+        }
+    }
+
+    private void UpdatePlatformingForces()
+    {
         velocity = physicsMovementBody.linearVelocity;
 
-        Vector3 xAxis = ProjectOnContactPlane(Vector3.right).normalized;
-        Vector3 zAxis = ProjectOnContactPlane(Vector3.forward).normalized;
+        Vector3 xAxis = ProjectDirectionOnPlane(rightAxis, contactNormal);
+        Vector3 zAxis = ProjectDirectionOnPlane(forwardAxis, contactNormal);
 
-        Vector3 desiredVelocity = moveValue3D * platformingMaxSpeed;
-
-        float currentX = Vector3.Dot(velocity, xAxis);
-        float currentZ = Vector3.Dot(velocity, zAxis);
+        Vector3 adjustment = Vector3.zero;
+        adjustment.x =
+            moveValue3D.x * platformingMaxSpeed - Vector3.Dot(velocity, xAxis);
+        adjustment.z =
+            moveValue3D.z * platformingMaxSpeed - Vector3.Dot(velocity, zAxis);
 
         float acceleration = grounded ? platformingMaxAccel : platformingMaxAirAccel;
-        float maxSpeedChange = acceleration;
 
-        float newX =
-            Mathf.MoveTowards(currentX, desiredVelocity.x, maxSpeedChange);
-        float newZ =
-            Mathf.MoveTowards(currentZ, desiredVelocity.z, maxSpeedChange);
+        adjustment =
+            Vector3.ClampMagnitude(adjustment, acceleration * Time.fixedDeltaTime);
 
-        velocity += xAxis * (newX - currentX) + zAxis * (newZ - currentZ);
+        velocity += xAxis * adjustment.x + zAxis * adjustment.z;
+
+        if (grounded)
+        {
+            velocity +=
+                contactNormal *
+                (Vector3.Dot(gravity, contactNormal) * Time.fixedDeltaTime);
+        }
+        else
+        {
+            velocity += gravity * Time.fixedDeltaTime;
+        }
+    }
+
+    private void UpdateSpeedForces()
+    {
+        velocity = physicsMovementBody.linearVelocity;
+
+        Vector3 xAxis = ProjectDirectionOnPlane(rightAxis, contactNormal);
+        Vector3 zAxis = ProjectDirectionOnPlane(forwardAxis, contactNormal);
+
+        Vector3 movementDir = facing * accelerateValue;
+
+        Vector3 adjustment = movementDir * speedAccel;
+
+        Debug.Log("movement - " + adjustment);
+
+        float acceleration = grounded ? speedMaxAccel : 0f;
+
+        adjustment =
+            Vector3.ClampMagnitude(adjustment, acceleration * Time.fixedDeltaTime);
+
+        velocity += xAxis * adjustment.x + zAxis * adjustment.z;
+
+        velocity += gravity * Time.fixedDeltaTime;
     }
 
     private void PlatformingJump()
@@ -232,8 +297,46 @@ public class PlayerController : MonoBehaviour
 
         stepsSinceLastJump = 0;
         jumpPhase++;
-        float jumpVelocity = Mathf.Sqrt(-2f * Physics.gravity.y * platformingJumpHeight);
-        jumpDirection = (jumpDirection + Vector3.up).normalized;
+        float jumpVelocity = Mathf.Sqrt(2f * gravity.magnitude * platformingJumpHeight);
+        jumpDirection = (jumpDirection + upAxis).normalized;
+        float alignedSpeed = Vector3.Dot(velocity, jumpDirection);
+        if (alignedSpeed > 0f)
+        {
+            jumpVelocity = Mathf.Max(jumpVelocity - alignedSpeed, 0f);
+        }
+        velocity += jumpDirection * jumpVelocity;
+    }
+
+    private void SpeedJump()
+    {
+        Vector3 jumpDirection;
+
+        if (grounded)
+        {
+            jumpDirection = contactNormal;
+        }
+        else if (steep)
+        {
+            jumpDirection = steepNormal;
+            jumpPhase = 0;
+        }
+        else if (maxAirJumps > 0 && jumpPhase <= maxAirJumps)
+        {
+            if (jumpPhase == 0)
+            {
+                jumpPhase = 1;
+            }
+            jumpDirection = contactNormal;
+        }
+        else
+        {
+            return;
+        }
+
+        stepsSinceLastJump = 0;
+        jumpPhase++;
+        float jumpVelocity = Mathf.Sqrt(2f * gravity.magnitude * platformingJumpHeight);
+        jumpDirection = (jumpDirection + upAxis).normalized;
         float alignedSpeed = Vector3.Dot(velocity, jumpDirection);
         if (alignedSpeed > 0f)
         {
@@ -248,7 +351,7 @@ public class PlayerController : MonoBehaviour
         if (Physics.SphereCast(groundRay, 0.3f, 0.6f))
         {
             groundContactCount = 1;
-            contactNormal = Vector3.up;
+            contactNormal = upAxis;
         }
     }
 
@@ -261,8 +364,8 @@ public class PlayerController : MonoBehaviour
             groundContactCount = 1;
             contactNormal = -(groundHit.point - transform.position).normalized;
 
-            Vector3.OrthoNormalize(ref contactNormal, ref orthoNormMove);
-            orthoNormMove *= moveValue3D.magnitude;
+            //Vector3.OrthoNormalize(ref contactNormal, ref orthoNormMove);
+            //orthoNormMove *= moveValue3D.magnitude;
         }
         else
         {
@@ -274,7 +377,7 @@ public class PlayerController : MonoBehaviour
             {
                 Vector3 collisionPoint = col.ClosestPoint(transform.position);
                 Vector3 tempUp = -(collisionPoint - transform.position).normalized;
-                float tempDot = Vector3.Dot(Vector3.up, tempUp);
+                float tempDot = Vector3.Dot(upAxis, tempUp);
 
                 if (tempDot > closestDot)
                 {
@@ -306,7 +409,8 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < collision.contactCount; i++)
         {
             Vector3 normal = collision.GetContact(i).normal;
-            if (normal.y >= minGroundDotProduct)
+            float upDot = Vector3.Dot(upAxis, normal);
+            if (upDot >= minGroundDotProduct)
             {
                 groundContactCount += 1;
                 contactNormal += normal;
@@ -330,11 +434,12 @@ public class PlayerController : MonoBehaviour
         {
             return false;
         }
-        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, platformingSnapProbeDist, platformingProbeMask))
+        if (!Physics.Raycast(transform.position, -upAxis, out RaycastHit hit, platformingSnapProbeDist, platformingProbeMask))
         {
             return false;
         }
-        if (hit.normal.y < minGroundDotProduct)
+        float upDot = Vector3.Dot(upAxis, hit.normal);
+        if (upDot < minGroundDotProduct)
         {
             return false;
         }
@@ -355,7 +460,8 @@ public class PlayerController : MonoBehaviour
         if (steepContactCount > 1)
         {
             steepNormal.Normalize();
-            if (steepNormal.y >= minGroundDotProduct)
+            float upDot = Vector3.Dot(upAxis, steepNormal);
+            if (upDot >= minGroundDotProduct)
             {
                 groundContactCount = 1;
                 contactNormal = steepNormal;
@@ -375,8 +481,8 @@ public class PlayerController : MonoBehaviour
         nearbyObjects.Remove(other);
     }
 
-    private Vector3 ProjectOnContactPlane(Vector3 vector)
+    Vector3 ProjectDirectionOnPlane(Vector3 direction, Vector3 normal)
     {
-        return vector - contactNormal * Vector3.Dot(vector, contactNormal);
+        return (direction - normal * Vector3.Dot(direction, normal)).normalized;
     }
 }

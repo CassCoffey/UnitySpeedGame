@@ -604,6 +604,9 @@ MonoBehaviour:
   alignDelay: 5
   alignSmoothRange: 45
   distance: 5
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &394895350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,6 +1212,7 @@ Transform:
   - {fileID: 1263067910}
   - {fileID: 1811378467}
   - {fileID: 1215286438}
+  - {fileID: 1094552370}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &774584233
@@ -1223,9 +1227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190154388a6820e48a03805d5950dcdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformingMaxSpeed: 5
-  platformingMaxAccel: 0.5
-  platformingMaxAirAccel: 0.05
+  platformingMaxSpeed: 10
+  platformingMaxAccel: 10
+  platformingMaxAirAccel: 1
   platformingJumpHeight: 2
   platformingMaxGroundAngle: 40
   platformingMaxSnapSpeed: 100
@@ -1234,11 +1238,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 55
   maxAirJumps: 1
-  cameraSpeed: 0.3
-  speedAccel: 15
+  speedAccel: 5
+  speedMaxAccel: 20
   speedJumpForce: 500
+  cameraSpeed: 0.3
   platformInputSpace: {fileID: 330585546}
-  speedInputSpace: {fileID: 0}
+  speedInputSpace: {fileID: 1094552370}
   physicsMovementBody: {fileID: 774584234}
   bodyVisual: {fileID: 1263067910}
   cameraOrbitRot: {fileID: 1215286438}
@@ -1251,7 +1256,7 @@ Rigidbody:
   m_GameObject: {fileID: 774584231}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0.1
+  m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -1264,7 +1269,7 @@ Rigidbody:
     m_Bits: 64
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
@@ -1534,6 +1539,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1042926825}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1094552369
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1094552370}
+  m_Layer: 0
+  m_Name: SpeedGyro
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1094552370
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094552369}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 774584232}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1096048689
 GameObject:
   m_ObjectHideFlags: 0

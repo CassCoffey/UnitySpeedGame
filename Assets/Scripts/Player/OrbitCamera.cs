@@ -35,6 +35,9 @@ public class OrbitCamera : MonoBehaviour
     Vector3 focusPoint, previousFocusPoint;
     Vector2 orbitAngles = new Vector2(45f, 0f);
 
+    Quaternion gravityAlignment = Quaternion.identity;
+    Quaternion orbitRotation;
+
     float lastManualRotationTime;
 
     InputAction lookAction;
@@ -45,7 +48,7 @@ public class OrbitCamera : MonoBehaviour
     {
         regularCamera = GetComponent<Camera>();
         focusPoint = focus.position;
-        transform.localRotation = Quaternion.Euler(orbitAngles);
+        transform.localRotation = orbitRotation = Quaternion.Euler(orbitAngles);
     }
 
     private void Start()
@@ -55,17 +58,19 @@ public class OrbitCamera : MonoBehaviour
 
     void LateUpdate()
     {
+        gravityAlignment =
+            Quaternion.FromToRotation(
+                gravityAlignment * Vector3.up, CustomGravity.GetUpAxis(focusPoint)
+            ) * gravityAlignment;
         UpdateFocusPoint();
-        Quaternion lookRotation;
         if (ManualRotation() || AutomaticRotation())
         {
             ConstrainAngles();
-            lookRotation = Quaternion.Euler(orbitAngles);
+            orbitRotation = Quaternion.Euler(orbitAngles);
         }
-        else
-        {
-            lookRotation = transform.localRotation;
-        }
+
+        Quaternion lookRotation = gravityAlignment * orbitRotation;
+
         Vector3 lookDirection = lookRotation * Vector3.forward;
         Vector3 lookPosition = focusPoint - lookDirection * distance;
 
@@ -132,10 +137,10 @@ public class OrbitCamera : MonoBehaviour
             return false;
         }
 
-        Vector2 movement = new Vector2(
-            focusPoint.x - previousFocusPoint.x,
-            focusPoint.z - previousFocusPoint.z
-        );
+        Vector3 alignedDelta =
+            Quaternion.Inverse(gravityAlignment) *
+            (focusPoint - previousFocusPoint);
+        Vector2 movement = new Vector2(alignedDelta.x, alignedDelta.z);
         float movementDeltaSqr = movement.sqrMagnitude;
         if (movementDeltaSqr < 0.0001f)
         {

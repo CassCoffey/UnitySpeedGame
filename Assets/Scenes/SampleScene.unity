@@ -592,7 +592,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acc5b946757cb4d42a86e7c76d70c545, type: 3}
+  m_Script: {fileID: 11500000, guid: 170dab7793d6d054f9a076de9e07b29b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   focus: {fileID: 774584232}
@@ -606,7 +606,7 @@ MonoBehaviour:
   distance: 5
   obstructionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 23
 --- !u!1 &394895350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1227,7 +1227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190154388a6820e48a03805d5950dcdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformingMaxSpeed: 10
+  platformingMaxSpeed: 7
   platformingMaxAccel: 10
   platformingMaxAirAccel: 1
   platformingJumpHeight: 2
@@ -1238,9 +1238,54 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 55
   maxAirJumps: 1
-  speedAccel: 5
-  speedMaxAccel: 20
+  speedAccel: 0.1
+  speedBrakeForce: 1
+  speedMaxGrip: 1
   speedJumpForce: 500
+  speedSteerAngle: 100
+  speedAirSteerAngle: 10
+  surfaceGrip:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.6
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.25
+      value: 0.5
+      inSlope: -0.6
+      outSlope: -0.6
+      tangentMode: 34
+      weightedMode: 3
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.5
+      value: 0.3
+      inSlope: -0.54999995
+      outSlope: -0.54999995
+      tangentMode: 34
+      weightedMode: 3
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0.15
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 1
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   cameraSpeed: 0.3
   platformInputSpace: {fileID: 330585546}
   speedInputSpace: {fileID: 1094552370}
@@ -1257,7 +1302,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1892,7 +1937,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 2f04afe3719c08e42964722feac58bea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1931,8 +1976,8 @@ Transform:
   m_GameObject: {fileID: 1561399753}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 100, y: 2, z: 100}
+  m_LocalPosition: {x: -444, y: -1, z: 0}
+  m_LocalScale: {x: 1000, y: 2, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

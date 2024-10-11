@@ -21,8 +21,13 @@ public class PlayerController : MonoBehaviour
     Vector3 facing;
 
     public float speedAccel = 10f;
-    public float speedMaxAccel = 15f;
+    public float speedBrakeForce = 0.5f;
+    public float speedMaxGrip = 1f;
     public float speedJumpForce = 500f;
+    public float speedSteerAngle = 45f;
+    public float speedAirSteerAngle = 10f;
+
+    public AnimationCurve surfaceGrip;
 
     public float cameraSpeed = 0.5f;
 
@@ -86,7 +91,10 @@ public class PlayerController : MonoBehaviour
         moveValue3D = new Vector3(moveValue.x, 0f, moveValue.y);
 
         Transform inputSpace = platformInputSpace;
-        if (SpeedMode) inputSpace = speedInputSpace;
+        if (SpeedMode)
+        {
+            inputSpace = speedInputSpace;
+        }
         
         if (inputSpace)
         {
@@ -116,16 +124,19 @@ public class PlayerController : MonoBehaviour
 
         if (SpeedMode)
         {
-            bodyVisual.LookAt(transform.position + facing, upAxis);
+            bodyVisual.rotation = speedInputSpace.rotation;
         } 
         else
         {
-            facing = platformInputSpace.TransformDirection(moveValue3D);
-            facing.y = 0f;
+            if (moveValue3D.magnitude > 0f)
+            {
+                facing = platformInputSpace.TransformDirection(moveValue3D);
+                facing.y = 0f;
 
-            facing.Normalize();
+                facing.Normalize();
 
-            bodyVisual.LookAt(transform.position + facing, upAxis);
+                bodyVisual.LookAt(transform.position + facing, upAxis);
+            }
         }
      }
 
@@ -170,21 +181,60 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateState()
     {
+        if (SpeedMode)
+        {
+            UpdateSpeedState();
+        }
+        else
+        {
+            UpdatePlatformingState();
+        }
+    }
+
+    private void UpdatePlatformingState()
+    {
         gravity = CustomGravity.GetGravity(transform.position, out upAxis);
 
         stepsSinceLastGrounded++;
         stepsSinceLastJump++;
 
-        if (accelerateValue > 0.1f)
+        if (grounded && accelerateValue > 0.1f)
         {
             SpeedMode = true;
-        } 
-        else if (brakeValue < 0.1f && physicsMovementBody.linearVelocity.magnitude <= 1f)
+            speedInputSpace.rotation = Quaternion.LookRotation(facing, upAxis);
+        }
+
+        if (grounded || SnapToGround() || CheckSteepContacts())
+        {
+            stepsSinceLastGrounded = 0;
+            if (stepsSinceLastJump > 1)
+            {
+                jumpPhase = 0;
+            }
+            if (groundContactCount > 1)
+            {
+                contactNormal.Normalize();
+            }
+        }
+        else
+        {
+            contactNormal = upAxis;
+        }
+    }
+
+    private void UpdateSpeedState()
+    {
+        gravity = CustomGravity.GetGravity(transform.position, out upAxis);
+
+        stepsSinceLastGrounded++;
+        stepsSinceLastJump++;
+
+        if (grounded && accelerateValue < 0.1f && brakeValue < 0.1f && physicsMovementBody.linearVelocity.magnitude <= 0.5f)
         {
             SpeedMode = false;
         }
 
-        if (grounded || SnapToGround() || CheckSteepContacts())
+        if (grounded)
         {
             stepsSinceLastGrounded = 0;
             if (stepsSinceLastJump > 1)
@@ -250,21 +300,47 @@ public class PlayerController : MonoBehaviour
     {
         velocity = physicsMovementBody.linearVelocity;
 
-        Vector3 xAxis = ProjectDirectionOnPlane(rightAxis, contactNormal);
-        Vector3 zAxis = ProjectDirectionOnPlane(forwardAxis, contactNormal);
+        float steering = grounded ? steerValue * speedSteerAngle : steerValue * speedAirSteerAngle;
 
-        Vector3 movementDir = facing * accelerateValue;
+        Vector3 zAxis = ProjectDirectionOnPlane(speedInputSpace.forward, contactNormal);
 
-        Vector3 adjustment = movementDir * speedAccel;
+        speedInputSpace.rotation = Quaternion.LookRotation(zAxis, contactNormal);
 
-        Debug.Log("movement - " + adjustment);
+        speedInputSpace.Rotate(speedInputSpace.up, steering * Time.fixedDeltaTime);
 
-        float acceleration = grounded ? speedMaxAccel : 0f;
+        float slidingVel = Vector3.Dot(speedInputSpace.right, velocity);
+        float slidingRatio = Vector3.Dot(speedInputSpace.right, velocity.normalized);
+        float gripForce = -slidingVel * surfaceGrip.Evaluate(slidingRatio);
 
-        adjustment =
-            Vector3.ClampMagnitude(adjustment, acceleration * Time.fixedDeltaTime);
+        gripForce = Mathf.Clamp(gripForce, -speedMaxGrip, speedMaxGrip);
 
-        velocity += xAxis * adjustment.x + zAxis * adjustment.z;
+        Vector3 slidingCorrection = speedInputSpace.right * gripForce;
+
+        Vector3 movementDir = speedInputSpace.forward * accelerateValue * speedAccel;
+
+        float rollingVel = Vector3.Dot(speedInputSpace.forward, velocity);
+        float brakeForce = brakeValue * speedBrakeForce;
+
+        if (accelerateValue <= 0f && brakeValue <= 0.1f)
+        {
+            brakeForce = speedBrakeForce * 0.1f;
+        }
+
+        float brakeGoal = Mathf.MoveTowards(rollingVel, 0f, brakeForce);
+        brakeForce = brakeGoal - rollingVel;
+
+        movementDir += speedInputSpace.forward * brakeForce;
+
+        Vector3 downForce = 0.2f * gravity.magnitude * -contactNormal;
+
+        if (grounded)
+        {
+            velocity += movementDir;
+
+            velocity += slidingCorrection;
+
+            velocity += downForce * Time.fixedDeltaTime;
+        }
 
         velocity += gravity * Time.fixedDeltaTime;
     }
@@ -410,15 +486,23 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 normal = collision.GetContact(i).normal;
             float upDot = Vector3.Dot(upAxis, normal);
-            if (upDot >= minGroundDotProduct)
+            if (!SpeedMode)
+            {
+                if (upDot >= minGroundDotProduct)
+                {
+                    groundContactCount += 1;
+                    contactNormal += normal;
+                }
+                else if (normal.y > -0.01f)
+                {
+                    steepContactCount += 1;
+                    steepNormal += normal;
+                }
+            }
+            else
             {
                 groundContactCount += 1;
                 contactNormal += normal;
-            }
-            else if (normal.y > -0.01f)
-            {
-                steepContactCount += 1;
-                steepNormal += normal;
             }
         }
     }

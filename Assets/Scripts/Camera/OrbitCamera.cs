@@ -1,6 +1,6 @@
+using SpeedGame;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
 [RequireComponent(typeof(Camera))]
 public class OrbitCamera : MonoBehaviour 
@@ -147,7 +147,7 @@ public class OrbitCamera : MonoBehaviour
             return false;
         }
 
-        float headingAngle = GetAngle(movement / Mathf.Sqrt(movementDeltaSqr));
+        float headingAngle = UtilFunctions.GetAngle(movement / Mathf.Sqrt(movementDeltaSqr));
         float deltaAbs = Mathf.Abs(Mathf.DeltaAngle(orbitAngles.y, headingAngle));
         float rotationChange = rotationSpeed * Mathf.Min(Time.unscaledDeltaTime, movementDeltaSqr);
         if (deltaAbs < alignSmoothRange)
@@ -197,11 +197,5 @@ public class OrbitCamera : MonoBehaviour
         {
             maxVerticalAngle = minVerticalAngle;
         }
-    }
-
-    static float GetAngle(Vector2 direction)
-    {
-        float angle = Mathf.Acos(direction.y) * Mathf.Rad2Deg;
-        return direction.x < 0f ? 360f - angle : angle;
     }
 }

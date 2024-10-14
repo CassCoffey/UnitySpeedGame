@@ -1,9 +1,5 @@
 using SpeedGame;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 [DefaultExecutionOrder(10)]
 public class GhostController : MonoBehaviour
@@ -13,7 +9,7 @@ public class GhostController : MonoBehaviour
     private ReplayData replay;
     private bool loadedData = false;
 
-    private long tick = 0;
+    private uint tick = 0;
 
     void Awake()
     {

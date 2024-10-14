@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
 using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
-using Unity.Burst.Intrinsics;
-using UnityEngine.Rendering;
 
 namespace SpeedGame
 {
@@ -17,27 +14,22 @@ namespace SpeedGame
 
     public struct CharacterInputSet
     {
-        public CharacterInputSet(Vector2 moveValue, Vector3 rightAxis, Vector3 forwardAxis, bool jumpPressed, bool jumpReleased, float steerValue, float accelerateValue, float brakeValue, long tick) =>
-            (MoveValueX, MoveValueY, RightAxisX, RightAxisY, RightAxisZ, ForwardAxisX, ForwardAxisY, ForwardAxisZ, JumpPressed, JumpReleased, SteerValue, AccelerateValue, BrakeValue, Tick) =
-            (moveValue.x, moveValue.y, rightAxis.x, rightAxis.y, rightAxis.z, forwardAxis.x, forwardAxis.y, forwardAxis.z, jumpPressed, jumpReleased, steerValue, accelerateValue, brakeValue, tick);
+        public CharacterInputSet(sbyte moveValueX, sbyte moveValueY, sbyte forwardAxisX, sbyte forwardAxisZ, byte buttonMask, sbyte steerValue, byte accelerateValue, byte brakeValue, uint tick) =>
+            (MoveValueX, MoveValueY, ForwardAxisX, ForwardAxisZ, ButtonMask, SteerValue, AccelerateValue, BrakeValue, Tick) =
+            (moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, accelerateValue, brakeValue, tick);
 
-        public long Tick { get; }
+        public uint Tick { get; }
 
-        public float MoveValueX { get; }
-        public float MoveValueY { get; }
+        public sbyte MoveValueX { get; }
+        public sbyte MoveValueY { get; }
 
-        public float RightAxisX { get; }
-        public float RightAxisY { get; }
-        public float RightAxisZ { get; }
-        public float ForwardAxisX { get; }
-        public float ForwardAxisY { get; }
-        public float ForwardAxisZ { get; }
+        public sbyte ForwardAxisX { get; }
+        public sbyte ForwardAxisZ { get; }
 
-        public bool JumpPressed { get; }
-        public bool JumpReleased { get; }
-        public float SteerValue { get; }
-        public float AccelerateValue { get; }
-        public float BrakeValue { get; }
+        public byte ButtonMask { get; }
+        public sbyte SteerValue { get; }
+        public byte AccelerateValue { get; }
+        public byte BrakeValue { get; }
     }
 
     public static class ReplayFunctions
@@ -74,7 +66,6 @@ namespace SpeedGame
                     {
                         writer.Write(ToBinary(replay.inputQueue.Dequeue()));
                     }
-                    
                 }
             }
         }

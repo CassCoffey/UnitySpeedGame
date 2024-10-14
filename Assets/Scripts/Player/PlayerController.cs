@@ -1,13 +1,17 @@
 using SpeedGame;
+using System;
 using System.Collections.Generic;
-using System.IO;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.IMGUI.Controls.CapsuleBoundsHandle;
 
 [DefaultExecutionOrder(10)]
 public class PlayerController : MonoBehaviour
 {
+    public static byte JumpPressedMask = 0b00000001;
+    public static byte JumpReleasedMask = 0b00000010;
+    public static byte TestPressedMask = 0b10000000;
+
     public Transform platformInputSpace = default;
 
     private Character character = null;
@@ -18,16 +22,17 @@ public class PlayerController : MonoBehaviour
     private InputAction brakeAction;
     private InputAction jumpAction;
 
-    private InputAction testButton;
+    private InputAction testAction;
 
     private ReplayData replay;
 
     Vector2 moveValue;
-    Vector3 rightAxis, forwardAxis;
-    float steerValue, accelerateValue, brakeValue;
-    bool jumpPressed, jumpReleased, testPressed;
+    Vector3 forwardAxis;
+    sbyte steerValue;
+    byte accelerateValue, brakeValue;
+    byte buttonMask = 0b00000000;
 
-    private long tick = 0;
+    private uint tick = 0;
 
     void Start()
     {
@@ -39,7 +44,7 @@ public class PlayerController : MonoBehaviour
         brakeAction = InputSystem.actions.FindAction("Brake");
         jumpAction = InputSystem.actions.FindAction("Jump");
 
-        testButton = InputSystem.actions.FindAction("THE TEST BUTTON");
+        testAction = InputSystem.actions.FindAction("THE TEST BUTTON");
 
         replay = new ReplayData();
         replay.inputQueue = new Queue<CharacterInputSet>();
@@ -49,21 +54,21 @@ public class PlayerController : MonoBehaviour
     {
         if (jumpAction.WasPerformedThisFrame())
         {
-            jumpPressed = true;
+            buttonMask |= JumpPressedMask;
         }
 
         if (jumpAction.WasCompletedThisFrame())
         {
-            jumpReleased = true;
+            buttonMask |= JumpReleasedMask;
         }
 
-        if (testButton.WasPerformedThisFrame())
+        if (testAction.WasPerformedThisFrame())
         {
-            testPressed = true;
+            buttonMask |= TestPressedMask;
         }
     }
 
-    void FixedUpdate()
+    unsafe void FixedUpdate()
     {
         Vector3 upAxis = CustomGravity.GetUpAxis(transform.position);
 
@@ -73,20 +78,24 @@ public class PlayerController : MonoBehaviour
 
         if (inputSpace)
         {
-            rightAxis = UtilFunctions.ProjectDirectionOnPlane(inputSpace.right, upAxis);
             forwardAxis = UtilFunctions.ProjectDirectionOnPlane(inputSpace.forward, upAxis);
         }
         else
         {
-            rightAxis = UtilFunctions.ProjectDirectionOnPlane(Vector3.right, upAxis);
             forwardAxis = UtilFunctions.ProjectDirectionOnPlane(Vector3.forward, upAxis);
         }
 
-        steerValue = steerAction.ReadValue<float>();
-        accelerateValue = accelerateAction.ReadValue<float>();
-        brakeValue = brakeAction.ReadValue<float>();
+        steerValue = (sbyte)(steerAction.ReadValue<float>() * 100f);
+        accelerateValue = (byte)(accelerateAction.ReadValue<float>() * 100f);
+        brakeValue = (byte)(brakeAction.ReadValue<float>() * 100f);
 
-        CharacterInputSet inputs = new CharacterInputSet(moveValue, rightAxis, forwardAxis, jumpPressed, jumpReleased, steerValue, accelerateValue, brakeValue, tick);
+        sbyte moveValueX = (sbyte)(moveValue.x * 100f);
+        sbyte moveValueY = (sbyte)(moveValue.y * 100f);
+
+        sbyte forwardAxisX = (sbyte)(forwardAxis.x * 100f);
+        sbyte forwardAxisZ = (sbyte)(forwardAxis.z * 100f);
+
+        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, accelerateValue, brakeValue, tick);
 
         character.UpdateInputs(inputs);
 
@@ -95,14 +104,17 @@ public class PlayerController : MonoBehaviour
             replay.inputQueue.Enqueue(inputs);
         }
 
-        if (testPressed)
+        if ((buttonMask & TestPressedMask) == TestPressedMask)
         {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
             ReplayFunctions.WriteReplay(replay);
-            watch.Stop();
         }
 
-        jumpPressed = jumpReleased = testPressed = false;
+        if (tick == 3000)
+        {
+            ReplayFunctions.WriteReplay(replay);
+        }
+
+        buttonMask = 0b00000000;
 
         tick++;
     }

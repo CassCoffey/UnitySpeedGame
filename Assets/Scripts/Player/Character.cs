@@ -98,16 +98,16 @@ public class Character : MonoBehaviour
 
     public void UpdateInputs(CharacterInputSet inputs)
     {
-        moveValue = new Vector2(inputs.MoveValueX, inputs.MoveValueY);
+        moveValue = new Vector2((float)inputs.MoveValueX / 100f, (float)inputs.MoveValueY / 100f);
 
-        rightAxis = new Vector3(inputs.RightAxisX, inputs.RightAxisY, inputs.RightAxisZ);
-        forwardAxis = new Vector3(inputs.ForwardAxisX, inputs.ForwardAxisY, inputs.ForwardAxisZ);
+        forwardAxis = new Vector3((float)inputs.ForwardAxisX / 100f, 0, (float)inputs.ForwardAxisZ / 100f);
+        rightAxis = Vector3.Cross(upAxis, forwardAxis);
 
-        jumpPressed = inputs.JumpPressed;
-        jumpReleased = inputs.JumpReleased;
-        steerValue = inputs.SteerValue;
-        accelerateValue = inputs.AccelerateValue;
-        brakeValue = inputs.BrakeValue;
+        jumpPressed = (inputs.ButtonMask & PlayerController.JumpPressedMask) == PlayerController.JumpPressedMask;
+        jumpReleased = (inputs.ButtonMask & PlayerController.JumpReleasedMask) == PlayerController.JumpReleasedMask;
+        steerValue = (float)inputs.SteerValue / 100f;
+        accelerateValue = (float)inputs.AccelerateValue / 100f;
+        brakeValue = (float)inputs.BrakeValue / 100f;
     }
 
     private void ResetInputs()
@@ -219,8 +219,8 @@ public class Character : MonoBehaviour
     {
         velocity = physicsMovementBody.linearVelocity;
 
-        Vector3 xAxis = UtilFunctions.ProjectDirectionOnPlane(rightAxis, contactNormal);
         Vector3 zAxis = UtilFunctions.ProjectDirectionOnPlane(forwardAxis, contactNormal);
+        Vector3 xAxis = UtilFunctions.ProjectDirectionOnPlane(rightAxis, contactNormal);
 
         Vector3 adjustment = Vector3.zero;
         adjustment.x =

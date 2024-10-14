@@ -46,11 +46,10 @@ public class Character : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
 
     private Vector2 moveValue = Vector2.zero;
+    private bool acceleratePressed, brakePressed = false;
     private bool jumpPressed = false;
     private bool jumpReleased = false;
     private float steerValue = 0f;
-    private float accelerateValue = 0f;
-    private float brakeValue = 0f;
 
     List<Collider> nearbyObjects = new List<Collider>();
 
@@ -105,9 +104,9 @@ public class Character : MonoBehaviour
 
         jumpPressed = (inputs.ButtonMask & PlayerController.JumpPressedMask) == PlayerController.JumpPressedMask;
         jumpReleased = (inputs.ButtonMask & PlayerController.JumpReleasedMask) == PlayerController.JumpReleasedMask;
+        acceleratePressed = (inputs.ButtonMask & PlayerController.AcceleratePressedMask) == PlayerController.AcceleratePressedMask;
+        brakePressed = (inputs.ButtonMask & PlayerController.BrakePressedMask) == PlayerController.BrakePressedMask;
         steerValue = (float)inputs.SteerValue / 100f;
-        accelerateValue = (float)inputs.AccelerateValue / 100f;
-        brakeValue = (float)inputs.BrakeValue / 100f;
     }
 
     private void ResetInputs()
@@ -147,7 +146,7 @@ public class Character : MonoBehaviour
         stepsSinceLastGrounded++;
         stepsSinceLastJump++;
 
-        if (grounded && accelerateValue > 0.1f)
+        if (grounded && acceleratePressed)
         {
             SpeedMode = true;
             speedInputSpace.rotation = Quaternion.LookRotation(facing, upAxis);
@@ -180,7 +179,7 @@ public class Character : MonoBehaviour
         stepsSinceLastGrounded++;
         stepsSinceLastJump++;
 
-        if (grounded && accelerateValue < 0.1f && brakeValue < 0.1f && physicsMovementBody.linearVelocity.magnitude <= 0.5f)
+        if (grounded && !acceleratePressed && !brakePressed && physicsMovementBody.linearVelocity.magnitude <= 0.5f)
         {
             SpeedMode = false;
         }
@@ -267,12 +266,22 @@ public class Character : MonoBehaviour
 
         Vector3 slidingCorrection = speedInputSpace.right * gripForce;
 
-        Vector3 movementDir = speedInputSpace.forward * accelerateValue * speedAccel;
+        Vector3 movementDir = Vector3.zero;
 
         float rollingVel = Vector3.Dot(speedInputSpace.forward, velocity);
-        float brakeForce = brakeValue * speedBrakeForce;
+        float brakeForce = 0f;
 
-        if (accelerateValue <= 0f && brakeValue <= 0.1f)
+        if (acceleratePressed)
+        {
+            movementDir = speedInputSpace.forward * speedAccel;
+        }
+
+        if (brakePressed)
+        {
+            brakeForce = speedBrakeForce;
+        }
+
+        if (!acceleratePressed && !brakePressed)
         {
             brakeForce = speedBrakeForce * 0.1f;
         }

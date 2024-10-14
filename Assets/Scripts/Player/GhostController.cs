@@ -11,6 +11,10 @@ public class GhostController : MonoBehaviour
 
     private uint tick = 0;
 
+    private CharacterInputSet previousInputs;
+    private CharacterInputSet nextInputs;
+    private bool repeatingInput = false;
+
     void Awake()
     {
         replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
@@ -25,13 +29,38 @@ public class GhostController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (loadedData && replay.inputQueue.TryDequeue(out CharacterInputSet inputs))
+        if (!loadedData)
+        {
+            return;
+        }
+
+        if (!repeatingInput && replay.inputQueue.TryDequeue(out CharacterInputSet inputs))
         {
             if (inputs.Tick == tick)
             {
                 character.UpdateInputs(inputs);
+                previousInputs = inputs;
+            }
+            else
+            {
+                nextInputs = inputs;
+                repeatingInput = true;
             }
         } 
+        else if (repeatingInput)
+        {
+            if (nextInputs.Tick == tick)
+            {
+                character.UpdateInputs(nextInputs);
+                previousInputs = nextInputs;
+                repeatingInput = false;
+            }
+            else
+            {
+                character.UpdateInputs(previousInputs);
+            }
+            
+        }
         else
         {
             // Replay is done

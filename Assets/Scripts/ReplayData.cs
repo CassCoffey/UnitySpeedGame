@@ -12,11 +12,11 @@ namespace SpeedGame
         public Queue<CharacterInputSet> inputQueue;
     }
 
-    public struct CharacterInputSet
+    public struct CharacterInputSet : IEquatable<CharacterInputSet>
     {
-        public CharacterInputSet(sbyte moveValueX, sbyte moveValueY, sbyte forwardAxisX, sbyte forwardAxisZ, byte buttonMask, sbyte steerValue, byte accelerateValue, byte brakeValue, uint tick) =>
-            (MoveValueX, MoveValueY, ForwardAxisX, ForwardAxisZ, ButtonMask, SteerValue, AccelerateValue, BrakeValue, Tick) =
-            (moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, accelerateValue, brakeValue, tick);
+        public CharacterInputSet(sbyte moveValueX, sbyte moveValueY, sbyte forwardAxisX, sbyte forwardAxisZ, byte buttonMask, sbyte steerValue, uint tick) =>
+            (MoveValueX, MoveValueY, ForwardAxisX, ForwardAxisZ, ButtonMask, SteerValue, Tick) =
+            (moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, tick);
 
         public uint Tick { get; }
 
@@ -28,8 +28,26 @@ namespace SpeedGame
 
         public byte ButtonMask { get; }
         public sbyte SteerValue { get; }
-        public byte AccelerateValue { get; }
-        public byte BrakeValue { get; }
+
+        public override bool Equals(object? obj) => obj is CharacterInputSet other && this.Equals(other);
+
+        public bool Equals(CharacterInputSet i) 
+        {
+            if (MoveValueX == i.MoveValueX && MoveValueY == i.MoveValueY && 
+                ForwardAxisX == i.ForwardAxisX && ForwardAxisZ == i.ForwardAxisZ &&
+                ButtonMask == i.ButtonMask && SteerValue == i.SteerValue)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode() => (MoveValueX, MoveValueY, ForwardAxisX, ForwardAxisZ, ButtonMask, SteerValue).GetHashCode();
+
+        public static bool operator ==(CharacterInputSet lhs, CharacterInputSet rhs) => lhs.Equals(rhs);
+
+        public static bool operator !=(CharacterInputSet lhs, CharacterInputSet rhs) => !(lhs == rhs);
     }
 
     public static class ReplayFunctions

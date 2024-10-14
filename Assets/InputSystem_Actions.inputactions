@@ -34,18 +34,18 @@
                 },
                 {
                     "name": "Accelerate",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "d0f1e900-cf48-4569-946f-8ae687e0df2b",
-                    "expectedControlType": "Axis",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
                 },
                 {
                     "name": "Brake",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "6a938107-df58-4ad4-b9d9-56f5967a7e26",
-                    "expectedControlType": "Axis",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true

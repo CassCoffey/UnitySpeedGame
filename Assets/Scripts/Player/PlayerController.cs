@@ -8,9 +8,11 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(10)]
 public class PlayerController : MonoBehaviour
 {
-    public static byte JumpPressedMask = 0b00000001;
-    public static byte JumpReleasedMask = 0b00000010;
-    public static byte TestPressedMask = 0b10000000;
+    public static byte JumpPressedMask          = 0b00000001;
+    public static byte JumpReleasedMask         = 0b00000010;
+    public static byte AcceleratePressedMask    = 0b00000100;
+    public static byte BrakePressedMask         = 0b00001000;
+    public static byte TestPressedMask          = 0b10000000;
 
     public Transform platformInputSpace = default;
 
@@ -29,10 +31,11 @@ public class PlayerController : MonoBehaviour
     Vector2 moveValue;
     Vector3 forwardAxis;
     sbyte steerValue;
-    byte accelerateValue, brakeValue;
     byte buttonMask = 0b00000000;
 
     private uint tick = 0;
+
+    private CharacterInputSet previousInputs;
 
     void Start()
     {
@@ -52,6 +55,16 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (accelerateAction.IsPressed())
+        {
+            buttonMask |= AcceleratePressedMask;
+        }
+
+        if (brakeAction.IsPressed())
+        {
+            buttonMask |= BrakePressedMask;
+        }
+
         if (jumpAction.WasPerformedThisFrame())
         {
             buttonMask |= JumpPressedMask;
@@ -86,8 +99,6 @@ public class PlayerController : MonoBehaviour
         }
 
         steerValue = (sbyte)(steerAction.ReadValue<float>() * 100f);
-        accelerateValue = (byte)(accelerateAction.ReadValue<float>() * 100f);
-        brakeValue = (byte)(brakeAction.ReadValue<float>() * 100f);
 
         sbyte moveValueX = (sbyte)(moveValue.x * 100f);
         sbyte moveValueY = (sbyte)(moveValue.y * 100f);
@@ -95,13 +106,16 @@ public class PlayerController : MonoBehaviour
         sbyte forwardAxisX = (sbyte)(forwardAxis.x * 100f);
         sbyte forwardAxisZ = (sbyte)(forwardAxis.z * 100f);
 
-        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, accelerateValue, brakeValue, tick);
+        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, tick);
 
-        character.UpdateInputs(inputs);
-
-        if (replay.inputQueue != null)
+        if (previousInputs != inputs)
         {
-            replay.inputQueue.Enqueue(inputs);
+            character.UpdateInputs(inputs);
+
+            if (replay.inputQueue != null)
+            {
+                replay.inputQueue.Enqueue(inputs);
+            }
         }
 
         if ((buttonMask & TestPressedMask) == TestPressedMask)
@@ -115,6 +129,7 @@ public class PlayerController : MonoBehaviour
         }
 
         buttonMask = 0b00000000;
+        previousInputs = inputs;
 
         tick++;
     }

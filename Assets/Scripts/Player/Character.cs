@@ -41,7 +41,7 @@ public class Character : MonoBehaviour
     private float minGroundDotProduct;
     private int stepsSinceLastGrounded, stepsSinceLastJump;
 
-    private Vector3 gravity, upAxis, rightAxis, forwardAxis;
+    private Vector3 gravity, upAxis;
 
     private Vector3 velocity = Vector3.zero;
 
@@ -99,9 +99,6 @@ public class Character : MonoBehaviour
     {
         moveValue = new Vector2((float)inputs.MoveValueX / 100f, (float)inputs.MoveValueY / 100f);
 
-        forwardAxis = new Vector3((float)inputs.ForwardAxisX / 100f, 0, (float)inputs.ForwardAxisZ / 100f);
-        rightAxis = Vector3.Cross(upAxis, forwardAxis);
-
         jumpPressed = (inputs.ButtonMask & PlayerController.JumpPressedMask) == PlayerController.JumpPressedMask;
         jumpReleased = (inputs.ButtonMask & PlayerController.JumpReleasedMask) == PlayerController.JumpReleasedMask;
         acceleratePressed = (inputs.ButtonMask & PlayerController.AcceleratePressedMask) == PlayerController.AcceleratePressedMask;
@@ -131,12 +128,7 @@ public class Character : MonoBehaviour
     {
         if (moveValue.magnitude > 0f)
         {
-            Vector3 facingXAxis = moveValue.x * rightAxis;
-            Vector3 facingZAxis = moveValue.y * forwardAxis;
-
-            facing = facingXAxis + facingZAxis;
-
-            facing.Normalize();
+            facing = new Vector3(moveValue.x, 0, moveValue.y);
 
             bodyVisual.LookAt(transform.position + facing, upAxis);
         }
@@ -218,21 +210,18 @@ public class Character : MonoBehaviour
     {
         velocity = physicsMovementBody.linearVelocity;
 
-        Vector3 zAxis = UtilFunctions.ProjectDirectionOnPlane(forwardAxis, contactNormal);
-        Vector3 xAxis = UtilFunctions.ProjectDirectionOnPlane(rightAxis, contactNormal);
+        Vector3 moveValue3D = new Vector3(moveValue.x, 0, moveValue.y);
 
-        Vector3 adjustment = Vector3.zero;
-        adjustment.x =
-            moveValue.x * platformingMaxSpeed - Vector3.Dot(velocity, xAxis);
-        adjustment.z =
-            moveValue.y * platformingMaxSpeed - Vector3.Dot(velocity, zAxis);
+        Vector3 moveAxis = UtilFunctions.ProjectDirectionOnPlane(moveValue3D, contactNormal);
+
+        float adjustment = moveValue.magnitude * platformingMaxSpeed - Vector3.Dot(velocity, moveAxis);
 
         float acceleration = grounded ? platformingMaxAccel : platformingMaxAirAccel;
 
         adjustment =
-            Vector3.ClampMagnitude(adjustment, acceleration * Time.fixedDeltaTime);
+            Mathf.Clamp(adjustment, 0f, acceleration * Time.fixedDeltaTime);
 
-        velocity += xAxis * adjustment.x + zAxis * adjustment.z;
+        velocity += moveAxis * adjustment;
 
         if (grounded)
         {

@@ -59,7 +59,6 @@ public class GhostController : MonoBehaviour
             {
                 character.UpdateInputs(previousInputs);
             }
-            
         }
         else
         {

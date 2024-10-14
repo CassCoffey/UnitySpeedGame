@@ -14,17 +14,14 @@ namespace SpeedGame
 
     public struct CharacterInputSet : IEquatable<CharacterInputSet>
     {
-        public CharacterInputSet(sbyte moveValueX, sbyte moveValueY, sbyte forwardAxisX, sbyte forwardAxisZ, byte buttonMask, sbyte steerValue, uint tick) =>
-            (MoveValueX, MoveValueY, ForwardAxisX, ForwardAxisZ, ButtonMask, SteerValue, Tick) =
-            (moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, tick);
+        public CharacterInputSet(sbyte moveValueX, sbyte moveValueY, byte buttonMask, sbyte steerValue, uint tick) =>
+            (MoveValueX, MoveValueY, ButtonMask, SteerValue, Tick) =
+            (moveValueX, moveValueY, buttonMask, steerValue, tick);
 
         public uint Tick { get; }
 
         public sbyte MoveValueX { get; }
         public sbyte MoveValueY { get; }
-
-        public sbyte ForwardAxisX { get; }
-        public sbyte ForwardAxisZ { get; }
 
         public byte ButtonMask { get; }
         public sbyte SteerValue { get; }
@@ -34,7 +31,6 @@ namespace SpeedGame
         public bool Equals(CharacterInputSet i) 
         {
             if (MoveValueX == i.MoveValueX && MoveValueY == i.MoveValueY && 
-                ForwardAxisX == i.ForwardAxisX && ForwardAxisZ == i.ForwardAxisZ &&
                 ButtonMask == i.ButtonMask && SteerValue == i.SteerValue)
             {
                 return true;
@@ -43,7 +39,7 @@ namespace SpeedGame
             return false;
         }
 
-        public override int GetHashCode() => (MoveValueX, MoveValueY, ForwardAxisX, ForwardAxisZ, ButtonMask, SteerValue).GetHashCode();
+        public override int GetHashCode() => (MoveValueX, MoveValueY, ButtonMask, SteerValue).GetHashCode();
 
         public static bool operator ==(CharacterInputSet lhs, CharacterInputSet rhs) => lhs.Equals(rhs);
 

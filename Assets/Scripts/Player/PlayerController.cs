@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.IMGUI.Controls.CapsuleBoundsHandle;
+using UnityEngine.UIElements.Experimental;
 
 [DefaultExecutionOrder(10)]
 public class PlayerController : MonoBehaviour
@@ -100,13 +102,18 @@ public class PlayerController : MonoBehaviour
 
         steerValue = (sbyte)(steerAction.ReadValue<float>() * 100f);
 
+        Vector3 rightAxis = Vector3.Cross(upAxis, forwardAxis);
+        Vector3 facingXAxis = moveValue.x * rightAxis;
+        Vector3 facingZAxis = moveValue.y * forwardAxis;
+
+        Vector3 moveVector = facingXAxis + facingZAxis;
+
+        moveValue = new Vector2(moveVector.x, moveVector.z);
+
         sbyte moveValueX = (sbyte)(moveValue.x * 100f);
         sbyte moveValueY = (sbyte)(moveValue.y * 100f);
 
-        sbyte forwardAxisX = (sbyte)(forwardAxis.x * 100f);
-        sbyte forwardAxisZ = (sbyte)(forwardAxis.z * 100f);
-
-        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, forwardAxisX, forwardAxisZ, buttonMask, steerValue, tick);
+        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, buttonMask, steerValue, tick);
 
         if (previousInputs != inputs)
         {

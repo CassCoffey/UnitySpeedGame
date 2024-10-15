@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
             forwardAxis = UtilFunctions.ProjectDirectionOnPlane(Vector3.forward, upAxis);
         }
 
-        steerValue = (sbyte)(steerAction.ReadValue<float>() * 100f);
+        steerValue = (sbyte)Mathf.RoundToInt(steerAction.ReadValue<float>() * 100f);
 
         Vector3 rightAxis = Vector3.Cross(upAxis, forwardAxis);
         Vector3 facingXAxis = moveValue.x * rightAxis;
@@ -110,8 +110,8 @@ public class PlayerController : MonoBehaviour
 
         moveValue = new Vector2(moveVector.x, moveVector.z);
 
-        sbyte moveValueX = (sbyte)(moveValue.x * 100f);
-        sbyte moveValueY = (sbyte)(moveValue.y * 100f);
+        sbyte moveValueX = (sbyte)Mathf.RoundToInt(moveValue.x * 100f);
+        sbyte moveValueY = (sbyte)Mathf.RoundToInt(moveValue.y * 100f);
 
         CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, buttonMask, steerValue, tick);
 

@@ -130,11 +130,6 @@ public class PlayerController : MonoBehaviour
             ReplayFunctions.WriteReplay(replay);
         }
 
-        if (tick == 3000)
-        {
-            ReplayFunctions.WriteReplay(replay);
-        }
-
         buttonMask = 0b00000000;
         previousInputs = inputs;
 

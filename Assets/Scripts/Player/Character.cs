@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SpeedGame;
+using static UnityEditor.IMGUI.Controls.CapsuleBoundsHandle;
 
 [DefaultExecutionOrder(100)]
 public class Character : MonoBehaviour
@@ -8,6 +9,7 @@ public class Character : MonoBehaviour
     public float platformingMaxSpeed = 10f;
     public float platformingMaxAccel = 10f;
     public float platformingMaxAirAccel = 1f;
+    public float platformingBrakeAccel = 15f;
     public float platformingJumpHeight = 2f;
     public float platformingMaxGroundAngle = 40f;
     public float platformingMaxSnapSpeed = 8f;
@@ -212,16 +214,34 @@ public class Character : MonoBehaviour
 
         Vector3 moveValue3D = new Vector3(moveValue.x, 0, moveValue.y);
 
-        Vector3 moveAxis = UtilFunctions.ProjectDirectionOnPlane(moveValue3D, contactNormal);
+        Vector3 zAxis = UtilFunctions.ProjectDirectionOnPlane(transform.forward, contactNormal);
+        Vector3 xAxis = UtilFunctions.ProjectDirectionOnPlane(transform.right, contactNormal);
 
-        float adjustment = moveValue.magnitude * platformingMaxSpeed - Vector3.Dot(velocity, moveAxis);
+        Vector3 adjustment = Vector3.zero;
+        adjustment.x =
+            moveValue.x * platformingMaxSpeed - Vector3.Dot(velocity, xAxis);
+        adjustment.z =
+            moveValue.y * platformingMaxSpeed - Vector3.Dot(velocity, zAxis);
 
         float acceleration = grounded ? platformingMaxAccel : platformingMaxAirAccel;
 
-        adjustment =
-            Mathf.Clamp(adjustment, 0f, acceleration * Time.fixedDeltaTime);
+        //if (moveValue.magnitude <= 0.05f && velocity.magnitude > 0f)
+        //{
+        //    Debug.Log("Braking.");
+        //    Debug.Log("Current Speed - " + velocity.magnitude);
+        //    float brakeGoal = Mathf.MoveTowards(velocity.magnitude, 0f, platformingBrakeAccel);
+        //    Debug.Log("Goal Speed - " + brakeGoal);
+        //
+        //    float brakeForce = brakeGoal - velocity.magnitude;
+        //    Debug.Log("Force to hit goal - " + brakeForce);
+        //
+        //    velocity += velocity.normalized * brakeForce;
+        //}
 
-        velocity += moveAxis * adjustment;
+        adjustment =
+            Vector3.ClampMagnitude(adjustment, acceleration * Time.fixedDeltaTime);
+
+        velocity += xAxis * adjustment.x + zAxis * adjustment.z;
 
         if (grounded)
         {

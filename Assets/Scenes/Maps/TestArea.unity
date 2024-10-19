@@ -1297,9 +1297,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7980e47278621b488503670ac712528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformingMaxSpeed: 10
-  platformingMaxAccel: 10
+  platformingMaxSpeed: 6
+  platformingMaxAccel: 12
   platformingMaxAirAccel: 1
+  platformingBrakeAccel: 0.5
   platformingJumpHeight: 2
   platformingMaxGroundAngle: 40
   platformingMaxSnapSpeed: 8
@@ -1462,9 +1463,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7980e47278621b488503670ac712528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformingMaxSpeed: 10
-  platformingMaxAccel: 10
+  platformingMaxSpeed: 6
+  platformingMaxAccel: 12
   platformingMaxAirAccel: 1
+  platformingBrakeAccel: 0.5
   platformingJumpHeight: 2
   platformingMaxGroundAngle: 40
   platformingMaxSnapSpeed: 8

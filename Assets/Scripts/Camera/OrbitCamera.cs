@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class OrbitCamera : MonoBehaviour 
 {
     [SerializeField]
-    Transform focus = default;
+    Character focus = default;
 
     [SerializeField, Min(0f)]
     float focusRadius = 1f;
@@ -16,6 +16,9 @@ public class OrbitCamera : MonoBehaviour
 
     [SerializeField, Range(1f, 360f)]
     float rotationSpeed = 90f;
+
+    [SerializeField, Range(1f, 1500f)]
+    float speedModeRotationSpeed = 500f;
 
     [SerializeField, Range(-89f, 89f)]
     float minVerticalAngle = -30f, maxVerticalAngle = 60f;
@@ -47,7 +50,7 @@ public class OrbitCamera : MonoBehaviour
     void Awake()
     {
         regularCamera = GetComponent<Camera>();
-        focusPoint = focus.position;
+        focusPoint = focus.transform.position;
         transform.localRotation = orbitRotation = Quaternion.Euler(orbitAngles);
     }
 
@@ -58,12 +61,23 @@ public class OrbitCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        gravityAlignment =
+        if (focus.SpeedMode)
+        {
+            gravityAlignment =
+            Quaternion.FromToRotation(
+                gravityAlignment * Vector3.up, focus.contactNormal
+            ) * gravityAlignment;
+        } 
+        else
+        {
+            gravityAlignment =
             Quaternion.FromToRotation(
                 gravityAlignment * Vector3.up, CustomGravity.GetUpAxis(focusPoint)
             ) * gravityAlignment;
+        }
+        
         UpdateFocusPoint();
-        if (ManualRotation() || AutomaticRotation())
+        if (SpeedRotation() || ManualRotation() || AutomaticRotation())
         {
             ConstrainAngles();
             orbitRotation = Quaternion.Euler(orbitAngles);
@@ -76,7 +90,7 @@ public class OrbitCamera : MonoBehaviour
 
         Vector3 rectOffset = lookDirection * regularCamera.nearClipPlane;
         Vector3 rectPosition = lookPosition + rectOffset;
-        Vector3 castFrom = focus.position;
+        Vector3 castFrom = focus.transform.position;
         Vector3 castLine = rectPosition - castFrom;
         float castDistance = castLine.magnitude;
         Vector3 castDirection = castLine / castDistance;
@@ -95,7 +109,7 @@ public class OrbitCamera : MonoBehaviour
     void UpdateFocusPoint()
     {
         previousFocusPoint = focusPoint;
-        Vector3 targetPoint = focus.position;
+        Vector3 targetPoint = focus.transform.position;
         if (focusRadius > 0f)
         {
             float distance = Vector3.Distance(targetPoint, focusPoint);
@@ -114,6 +128,29 @@ public class OrbitCamera : MonoBehaviour
         {
             focusPoint = targetPoint;
         }
+    }
+
+    bool SpeedRotation()
+    {
+        if (!focus.SpeedMode)
+        {
+            return false;
+        }
+
+        Vector3 alignedDelta =
+            Quaternion.Inverse(gravityAlignment) *
+            (focusPoint - previousFocusPoint);
+        Vector2 movement = new Vector2(alignedDelta.x, alignedDelta.z);
+        float movementDeltaSqr = movement.sqrMagnitude;
+        if (movementDeltaSqr < 0.0001f)
+        {
+            return false;
+        }
+
+        float headingAngle = UtilFunctions.GetAngle(movement / Mathf.Sqrt(movementDeltaSqr));
+        float rotationChange = speedModeRotationSpeed * Mathf.Min(Time.unscaledDeltaTime, movementDeltaSqr);
+        orbitAngles.y = Mathf.MoveTowardsAngle(orbitAngles.y, headingAngle, rotationChange);
+        return true;
     }
 
     bool ManualRotation()

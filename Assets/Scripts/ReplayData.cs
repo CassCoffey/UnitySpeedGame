@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System;
-using UnityEngine;
 using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace SpeedGame
 {
@@ -70,9 +70,17 @@ namespace SpeedGame
 
         public static void WriteReplay(ReplayData replay)
         {
+            string path = Path.Combine(Application.persistentDataPath, "data");
             string fileName = "CurrentReplay.replay";
+            path = Path.Combine(path, fileName);
 
-            using (var stream = File.Open(fileName, FileMode.Create))
+            //Create Directory if it does not exist
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
+
+            using (var stream = File.Open(path, FileMode.Create))
             {
                 using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
                 {
@@ -89,9 +97,12 @@ namespace SpeedGame
             ReplayData result = new ReplayData();
             result.inputQueue = new Queue<CharacterInputSet>();
 
-            if (File.Exists(fileName))
+            string path = Path.Combine(Application.persistentDataPath, "data");
+            path = Path.Combine(path, fileName);
+
+            if (File.Exists(path))
             {
-                using (var stream = File.Open(fileName, FileMode.Open))
+                using (var stream = File.Open(path, FileMode.Open))
                 {
                     using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                     {

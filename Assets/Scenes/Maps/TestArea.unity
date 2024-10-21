@@ -595,13 +595,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170dab7793d6d054f9a076de9e07b29b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focus: {fileID: 774584232}
+  focus: {fileID: 774584235}
   focusRadius: 1
   focusCentering: 0.5
   rotationSpeed: 90
+  speedModeRotationSpeed: 1000
   minVerticalAngle: -30
   maxVerticalAngle: 60
-  alignDelay: 5
+  alignDelay: 4
   alignSmoothRange: 45
   distance: 5
   obstructionMask:
@@ -1300,7 +1301,6 @@ MonoBehaviour:
   platformingMaxSpeed: 6
   platformingMaxAccel: 12
   platformingMaxAirAccel: 1
-  platformingBrakeAccel: 0.5
   platformingJumpHeight: 2
   platformingMaxGroundAngle: 40
   platformingMaxSnapSpeed: 8
@@ -1342,6 +1342,7 @@ MonoBehaviour:
   speedInputSpace: {fileID: 1071977667}
   physicsMovementBody: {fileID: 773725650}
   bodyVisual: {fileID: 1632337328}
+  SpeedMode: 0
 --- !u!4 &773725653
 Transform:
   m_ObjectHideFlags: 0
@@ -1466,7 +1467,6 @@ MonoBehaviour:
   platformingMaxSpeed: 6
   platformingMaxAccel: 12
   platformingMaxAirAccel: 1
-  platformingBrakeAccel: 0.5
   platformingJumpHeight: 2
   platformingMaxGroundAngle: 40
   platformingMaxSnapSpeed: 8
@@ -1508,6 +1508,7 @@ MonoBehaviour:
   speedInputSpace: {fileID: 1094552370}
   physicsMovementBody: {fileID: 774584234}
   bodyVisual: {fileID: 1263067910}
+  SpeedMode: 0
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

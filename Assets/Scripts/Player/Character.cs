@@ -30,9 +30,9 @@ public class Character : MonoBehaviour
 
     private Vector3 facing;
 
-    private bool SpeedMode = false;
+    public bool SpeedMode = false;
 
-    private Vector3 contactNormal, steepNormal;
+    public Vector3 contactNormal, steepNormal;
     private int groundContactCount, steepContactCount;
     private bool grounded => groundContactCount > 0;
     private bool steep => steepContactCount > 0;
@@ -248,7 +248,7 @@ public class Character : MonoBehaviour
 
         speedInputSpace.rotation = Quaternion.LookRotation(zAxis, contactNormal);
 
-        speedInputSpace.Rotate(speedInputSpace.up, steering * Time.fixedDeltaTime);
+        speedInputSpace.Rotate(0, steering * Time.fixedDeltaTime, 0, Space.Self);
 
         float slidingVel = Vector3.Dot(speedInputSpace.right, velocity);
         float slidingRatio = Vector3.Dot(speedInputSpace.right, velocity.normalized);
@@ -371,55 +371,6 @@ public class Character : MonoBehaviour
             jumpVelocity = Mathf.Max(jumpVelocity - alignedSpeed, 0f);
         }
         velocity += jumpDirection * jumpVelocity;
-    }
-
-    private void CheckGrounded()
-    {
-        Ray groundRay = new Ray(transform.position, -contactNormal);
-        if (Physics.SphereCast(groundRay, 0.3f, 0.6f))
-        {
-            groundContactCount = 1;
-            contactNormal = upAxis;
-        }
-    }
-
-    private void CheckWallrunning()
-    {
-        RaycastHit groundHit;
-        Ray groundRay = new Ray(transform.position, -contactNormal);
-        if (Physics.SphereCast(groundRay, 0.3f, out groundHit, 0.6f))
-        {
-            groundContactCount = 1;
-            contactNormal = -(groundHit.point - transform.position).normalized;
-
-            //Vector3.OrthoNormalize(ref contactNormal, ref orthoNormMove);
-            //orthoNormMove *= moveValue3D.magnitude;
-        }
-        else
-        {
-            // not on previous ground, check for another
-            Vector3 bestUp = Vector3.zero;
-            float closestDot = -1f;
-
-            foreach (Collider col in nearbyObjects)
-            {
-                Vector3 collisionPoint = col.ClosestPoint(transform.position);
-                Vector3 tempUp = -(collisionPoint - transform.position).normalized;
-                float tempDot = Vector3.Dot(upAxis, tempUp);
-
-                if (tempDot > closestDot)
-                {
-                    bestUp = tempUp;
-                    closestDot = tempDot;
-                }
-            }
-
-            if (bestUp != Vector3.zero)
-            {
-                groundContactCount = 1;
-                contactNormal = bestUp;
-            }
-        }
     }
 
     void OnCollisionEnter(Collision collision)

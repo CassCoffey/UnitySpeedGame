@@ -1,11 +1,7 @@
 using SpeedGame;
-using System;
 using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.IMGUI.Controls.CapsuleBoundsHandle;
-using UnityEngine.UIElements.Experimental;
 
 [DefaultExecutionOrder(10)]
 public class PlayerController : MonoBehaviour

@@ -457,7 +457,9 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585551}
   - component: {fileID: 330585549}
+  - component: {fileID: 330585550}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -595,11 +597,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170dab7793d6d054f9a076de9e07b29b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focus: {fileID: 774584235}
+  focus: {fileID: 774584232}
   focusRadius: 1
   focusCentering: 0.5
   rotationSpeed: 90
-  speedModeRotationSpeed: 1000
   minVerticalAngle: -30
   maxVerticalAngle: 60
   alignDelay: 4
@@ -608,6 +609,45 @@ MonoBehaviour:
   obstructionMask:
     serializedVersion: 2
     m_Bits: 23
+--- !u!114 &330585550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01d202026744b464992f75045e5252c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  focus: {fileID: 774584235}
+  focusRadius: 1
+  focusCentering: 0.5
+  rotationSpeed: 1200
+  distance: 5
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!114 &330585551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae0b9c6932c0f71428b210dbf9d845d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  focus: {fileID: 774584235}
+  focusPoint: {x: 0, y: 0, z: 0}
+  previousFocusPoint: {x: 0, y: 0, z: 0}
+  orbitAngles: {x: 45, y: 0}
+  gravityAlignment: {x: 0, y: 0, z: 0, w: 1}
+  orbitRotation: {x: 0, y: 0, z: 0, w: 0}
+  regularCamera: {fileID: 0}
 --- !u!1 &394895350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1343,6 +1383,8 @@ MonoBehaviour:
   physicsMovementBody: {fileID: 773725650}
   bodyVisual: {fileID: 1632337328}
   SpeedMode: 0
+  contactNormal: {x: 0, y: 0, z: 0}
+  steepNormal: {x: 0, y: 0, z: 0}
 --- !u!4 &773725653
 Transform:
   m_ObjectHideFlags: 0
@@ -1509,6 +1551,8 @@ MonoBehaviour:
   physicsMovementBody: {fileID: 774584234}
   bodyVisual: {fileID: 1263067910}
   SpeedMode: 0
+  contactNormal: {x: 0, y: 0, z: 0}
+  steepNormal: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

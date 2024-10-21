@@ -30,8 +30,10 @@ public class Character : MonoBehaviour
 
     private Vector3 facing;
 
+    [HideInInspector]
     public bool SpeedMode = false;
 
+    [HideInInspector]
     public Vector3 contactNormal, steepNormal;
     private int groundContactCount, steepContactCount;
     private bool grounded => groundContactCount > 0;

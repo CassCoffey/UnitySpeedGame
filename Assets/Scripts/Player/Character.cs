@@ -99,10 +99,10 @@ public class Character : MonoBehaviour
     {
         moveValue = new Vector2((float)inputs.MoveValueX / 100f, (float)inputs.MoveValueY / 100f);
 
-        jumpPressed = (inputs.ButtonMask & PlayerController.JumpPressedMask) == PlayerController.JumpPressedMask;
-        jumpReleased = (inputs.ButtonMask & PlayerController.JumpReleasedMask) == PlayerController.JumpReleasedMask;
-        acceleratePressed = (inputs.ButtonMask & PlayerController.AccelerateMask) == PlayerController.AccelerateMask;
-        brakePressed = (inputs.ButtonMask & PlayerController.BrakeMask) == PlayerController.BrakeMask;
+        jumpPressed = (inputs.ButtonMask & Controller.JumpPressedMask) == Controller.JumpPressedMask;
+        jumpReleased = (inputs.ButtonMask & Controller.JumpReleasedMask) == Controller.JumpReleasedMask;
+        acceleratePressed = (inputs.ButtonMask & Controller.AccelerateMask) == Controller.AccelerateMask;
+        brakePressed = (inputs.ButtonMask & Controller.BrakeMask) == Controller.BrakeMask;
         steerValue = (float)inputs.SteerValue / 100f;
     }
 
@@ -456,10 +456,5 @@ public class Character : MonoBehaviour
             }
         }
         return false;
-    }
-
-    public void ActivateCheckpoint()
-    {
-        Debug.Log("Checkpoint Wahoo!");
     }
 }

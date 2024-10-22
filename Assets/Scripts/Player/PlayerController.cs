@@ -4,19 +4,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(10)]
-public class PlayerController : MonoBehaviour
+public class PlayerController : Controller
 {
-    public static byte JumpPressedMask       = 0b00000001;
-    public static byte JumpReleasedMask      = 0b00000010;
-    public static byte AccelerateMask        = 0b00000100;
-    public static byte BrakeMask             = 0b00001000;
-
-    public static byte CheckpointResetMask   = 0b01000000;
-    public static byte FullResetMask         = 0b10000000;
-
     public Transform platformInputSpace = default;
-
-    private Character character = null;
 
     private InputAction moveAction;
     private InputAction steerAction;
@@ -34,13 +24,11 @@ public class PlayerController : MonoBehaviour
     sbyte steerValue;
     byte buttonMask = 0b00000000;
 
-    private uint tick = 0;
-
     private CharacterInputSet previousInputs;
 
-    void Start()
+    protected override void Awake()
     {
-        character = GetComponent<Character>();
+        base.Awake();
 
         moveAction = InputSystem.actions.FindAction("Move");
         steerAction = InputSystem.actions.FindAction("Steering");
@@ -88,7 +76,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    unsafe void FixedUpdate()
+    protected override void FixedUpdate()
     {
         Vector3 upAxis = CustomGravity.GetUpAxis(transform.position);
 
@@ -133,6 +121,6 @@ public class PlayerController : MonoBehaviour
         buttonMask = 0b00000000;
         previousInputs = inputs;
 
-        tick++;
+        base.FixedUpdate();
     }
 }

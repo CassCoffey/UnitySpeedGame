@@ -5,7 +5,12 @@ public class Checkpoint : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        Character character = other.GetComponent<Character>();
-        character.ActivateCheckpoint();
+        Transform player = other.transform.parent;
+        Controller controller = player.GetComponent<Controller>();
+
+        if (controller != null)
+        {
+            controller.ActivateCheckpoint(this);
+        }
     }
 }

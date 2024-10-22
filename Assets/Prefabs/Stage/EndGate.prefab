@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 6689416572125152049}
   - component: {fileID: 7487598755928502347}
   - component: {fileID: 3730385914683775867}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -2,32 +2,28 @@ using SpeedGame;
 using UnityEngine;
 
 [DefaultExecutionOrder(10)]
-public class GhostController : MonoBehaviour
+public class GhostController : Controller
 {
-    private Character character = null;
-
     private ReplayData replay;
     private bool loadedData = false;
-
-    private uint tick = 0;
 
     private CharacterInputSet previousInputs;
     private CharacterInputSet nextInputs;
     private bool repeatingInput = false;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
         if (replay != null)
         {
             loadedData = true;
             Debug.Log("Reading replay with length - " + replay.inputQueue.Count);
         }
-
-        character = GetComponent<Character>();
     }
 
-    void FixedUpdate()
+    protected override void FixedUpdate()
     {
         if (!loadedData)
         {
@@ -66,6 +62,6 @@ public class GhostController : MonoBehaviour
             loadedData = false;
         }
 
-        tick++;
+        base.FixedUpdate();
     }
 }

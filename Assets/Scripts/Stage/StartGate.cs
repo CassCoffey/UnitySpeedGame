@@ -1,4 +1,5 @@
 using SpeedGame;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,6 +12,7 @@ public class StartGate : MonoBehaviour
     {
         SpawnPlayer();
         SpawnGhost();
+        StartCoroutine(SpawnGhostDelay(3));
     }
 
     void SpawnPlayer()
@@ -24,6 +26,20 @@ public class StartGate : MonoBehaviour
 
     void SpawnGhost()
     {
+        ReplayData replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
+        if (replay != null)
+        {
+            Debug.Log("Reading replay with length - " + replay.inputQueue.Count);
+            GameObject ghost = Instantiate(Character, new Vector3(0, 0, 0), Quaternion.identity);
+            GhostController controller = ghost.AddComponent<GhostController>();
+            controller.SetReplay(replay);
+        }
+    }
+
+    IEnumerator SpawnGhostDelay(float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+
         ReplayData replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
         if (replay != null)
         {

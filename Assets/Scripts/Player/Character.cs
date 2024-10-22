@@ -28,7 +28,7 @@ public class Character : MonoBehaviour
     public Rigidbody physicsMovementBody;
     public Transform bodyVisual;
 
-    private Vector3 facing;
+    private Vector3 facing = Vector3.forward;
 
     [HideInInspector]
     public bool SpeedMode = false;
@@ -174,6 +174,7 @@ public class Character : MonoBehaviour
         if (grounded && !acceleratePressed && !brakePressed && physicsMovementBody.linearVelocity.magnitude <= 0.5f)
         {
             SpeedMode = false;
+            facing = speedInputSpace.forward;
         }
 
         if (grounded)

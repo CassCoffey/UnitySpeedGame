@@ -58,4 +58,9 @@ public class GhostController : Controller
 
         base.FixedUpdate();
     }
+
+    protected override void Finish()
+    {
+        Debug.Log("Ghost Reached at tick - " + tick);
+    }
 }

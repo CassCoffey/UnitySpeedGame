@@ -53,8 +53,6 @@ public class Character : MonoBehaviour
     private bool jumpReleased = false;
     private float steerValue = 0f;
 
-    List<Collider> nearbyObjects = new List<Collider>();
-
     private void Awake()
     {
         physicsMovementBody.useGravity = false;
@@ -103,8 +101,8 @@ public class Character : MonoBehaviour
 
         jumpPressed = (inputs.ButtonMask & PlayerController.JumpPressedMask) == PlayerController.JumpPressedMask;
         jumpReleased = (inputs.ButtonMask & PlayerController.JumpReleasedMask) == PlayerController.JumpReleasedMask;
-        acceleratePressed = (inputs.ButtonMask & PlayerController.AcceleratePressedMask) == PlayerController.AcceleratePressedMask;
-        brakePressed = (inputs.ButtonMask & PlayerController.BrakePressedMask) == PlayerController.BrakePressedMask;
+        acceleratePressed = (inputs.ButtonMask & PlayerController.AccelerateMask) == PlayerController.AccelerateMask;
+        brakePressed = (inputs.ButtonMask & PlayerController.BrakeMask) == PlayerController.BrakeMask;
         steerValue = (float)inputs.SteerValue / 100f;
     }
 
@@ -460,13 +458,8 @@ public class Character : MonoBehaviour
         return false;
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void ActivateCheckpoint()
     {
-        nearbyObjects.Add(other);
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        nearbyObjects.Remove(other);
+        Debug.Log("Checkpoint Wahoo!");
     }
 }

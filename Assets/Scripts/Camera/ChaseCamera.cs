@@ -5,9 +5,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Camera))]
 public class ChaseCamera : MonoBehaviour
 {
-    [SerializeField]
-    Character focus = default;
-
     [SerializeField, Min(0f)]
     float focusRadius = 1f;
 
@@ -20,8 +17,16 @@ public class ChaseCamera : MonoBehaviour
     [SerializeField, Range(1f, 20f)]
     float distance = 5f;
 
+    [SerializeField, Range(0f, 90f)]
+    float angle = 40f;
+
+    [SerializeField, Range(0f, 90f)]
+    float angleThreshold = 30f;
+
     [SerializeField]
     LayerMask obstructionMask = -1;
+
+    Vector3 surfaceNormal = Vector3.up;
 
     CameraManager manager = default;
 
@@ -34,7 +39,7 @@ public class ChaseCamera : MonoBehaviour
     {
         manager.gravityAlignment =
         Quaternion.FromToRotation(
-            manager.gravityAlignment * Vector3.up, focus.contactNormal
+            manager.gravityAlignment * Vector3.up, manager.focus.contactNormal
         ) * manager.gravityAlignment;
 
         UpdateFocusPoint();
@@ -51,7 +56,7 @@ public class ChaseCamera : MonoBehaviour
 
         Vector3 rectOffset = lookDirection * manager.regularCamera.nearClipPlane;
         Vector3 rectPosition = lookPosition + rectOffset;
-        Vector3 castFrom = focus.transform.position;
+        Vector3 castFrom = manager.focus.transform.position;
         Vector3 castLine = rectPosition - castFrom;
         float castDistance = castLine.magnitude;
         Vector3 castDirection = castLine / castDistance;
@@ -70,7 +75,7 @@ public class ChaseCamera : MonoBehaviour
     void UpdateFocusPoint()
     {
         manager.previousFocusPoint = manager.focusPoint;
-        Vector3 targetPoint = focus.transform.position;
+        Vector3 targetPoint = manager.focus.transform.position;
         if (focusRadius > 0f)
         {
             float distance = Vector3.Distance(targetPoint, manager.focusPoint);

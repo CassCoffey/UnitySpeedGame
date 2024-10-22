@@ -20,7 +20,7 @@ public class CameraManager : MonoBehaviour
     [HideInInspector]
     public Camera regularCamera;
 
-    void Awake()
+    void Start()
     {
         orbitCam = GetComponent<OrbitCamera>();
         chaseCam = GetComponent<ChaseCamera>();

@@ -6,11 +6,13 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(10)]
 public class PlayerController : MonoBehaviour
 {
-    public static byte JumpPressedMask          = 0b00000001;
-    public static byte JumpReleasedMask         = 0b00000010;
-    public static byte AcceleratePressedMask    = 0b00000100;
-    public static byte BrakePressedMask         = 0b00001000;
-    public static byte TestPressedMask          = 0b10000000;
+    public static byte JumpPressedMask       = 0b00000001;
+    public static byte JumpReleasedMask      = 0b00000010;
+    public static byte AccelerateMask        = 0b00000100;
+    public static byte BrakeMask             = 0b00001000;
+
+    public static byte CheckpointResetMask   = 0b01000000;
+    public static byte FullResetMask         = 0b10000000;
 
     public Transform platformInputSpace = default;
 
@@ -22,7 +24,8 @@ public class PlayerController : MonoBehaviour
     private InputAction brakeAction;
     private InputAction jumpAction;
 
-    private InputAction testAction;
+    private InputAction checkpointResetAction;
+    private InputAction fullResetAction;
 
     private ReplayData replay;
 
@@ -45,7 +48,8 @@ public class PlayerController : MonoBehaviour
         brakeAction = InputSystem.actions.FindAction("Brake");
         jumpAction = InputSystem.actions.FindAction("Jump");
 
-        testAction = InputSystem.actions.FindAction("THE TEST BUTTON");
+        checkpointResetAction = InputSystem.actions.FindAction("Checkpoint Reset");
+        fullResetAction = InputSystem.actions.FindAction("Full Reset");
 
         replay = new ReplayData();
         replay.inputQueue = new Queue<CharacterInputSet>();
@@ -55,12 +59,12 @@ public class PlayerController : MonoBehaviour
     {
         if (accelerateAction.IsPressed())
         {
-            buttonMask |= AcceleratePressedMask;
+            buttonMask |= AccelerateMask;
         }
 
         if (brakeAction.IsPressed())
         {
-            buttonMask |= BrakePressedMask;
+            buttonMask |= BrakeMask;
         }
 
         if (jumpAction.WasPerformedThisFrame())
@@ -73,9 +77,14 @@ public class PlayerController : MonoBehaviour
             buttonMask |= JumpReleasedMask;
         }
 
-        if (testAction.WasPerformedThisFrame())
+        if (checkpointResetAction.WasPerformedThisFrame())
         {
-            buttonMask |= TestPressedMask;
+            buttonMask |= CheckpointResetMask;
+        }
+
+        if (fullResetAction.WasPerformedThisFrame())
+        {
+            buttonMask |= FullResetMask;
         }
     }
 
@@ -119,11 +128,6 @@ public class PlayerController : MonoBehaviour
             {
                 replay.inputQueue.Enqueue(inputs);
             }
-        }
-
-        if ((buttonMask & TestPressedMask) == TestPressedMask)
-        {
-            ReplayFunctions.WriteReplay(replay);
         }
 
         buttonMask = 0b00000000;

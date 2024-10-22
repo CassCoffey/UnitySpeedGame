@@ -60,9 +60,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "THE TEST BUTTON",
+                    "name": "Checkpoint Reset",
                     "type": "Button",
-                    "id": "f09edcb0-af0a-427b-a552-aaf622c51bed",
+                    "id": "239af930-d7be-479e-8aec-a2dff2941f38",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Full Reset",
+                    "type": "Button",
+                    "id": "98fccd34-5f54-4b36-8f9c-1e638d343a10",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -314,12 +323,45 @@
                 },
                 {
                     "name": "",
-                    "id": "dc0864db-ebdd-4016-a297-784ed7e6bb25",
-                    "path": "<Keyboard>/k",
+                    "id": "30191e5e-c39d-46be-8b9d-0cb9bdc09cd0",
+                    "path": "<Keyboard>/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Gamepad;Keyboard&Mouse",
-                    "action": "THE TEST BUTTON",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Checkpoint Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9a832399-3a92-4d36-aef1-a6407875ede2",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Checkpoint Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df544104-13db-4cb7-8e07-f67a96bdfbbf",
+                    "path": "<Keyboard>/u",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Full Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "87047275-f6f1-4324-970a-d44e5786f564",
+                    "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Full Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

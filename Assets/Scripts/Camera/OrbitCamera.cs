@@ -5,9 +5,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Camera))]
 public class OrbitCamera : MonoBehaviour 
 {
-    [SerializeField]
-    Transform focus = default;
-
     [SerializeField, Min(0f)]
     float focusRadius = 1f;
 
@@ -69,7 +66,7 @@ public class OrbitCamera : MonoBehaviour
 
         Vector3 rectOffset = lookDirection * manager.regularCamera.nearClipPlane;
         Vector3 rectPosition = lookPosition + rectOffset;
-        Vector3 castFrom = focus.position;
+        Vector3 castFrom = manager.focus.transform.position;
         Vector3 castLine = rectPosition - castFrom;
         float castDistance = castLine.magnitude;
         Vector3 castDirection = castLine / castDistance;
@@ -88,7 +85,7 @@ public class OrbitCamera : MonoBehaviour
     void UpdateFocusPoint()
     {
         manager.previousFocusPoint = manager.focusPoint;
-        Vector3 targetPoint = focus.position;
+        Vector3 targetPoint = manager.focus.transform.position;
         if (focusRadius > 0f)
         {
             float distance = Vector3.Distance(targetPoint, manager.focusPoint);

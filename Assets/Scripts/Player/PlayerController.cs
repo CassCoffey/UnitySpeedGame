@@ -123,4 +123,10 @@ public class PlayerController : Controller
 
         base.FixedUpdate();
     }
+
+    protected override void Finish()
+    {
+        Debug.Log("Reached finish! Final ticks - " + tick);
+        ReplayFunctions.WriteReplay(replay);
+    }
 }

@@ -1,4 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+public struct CheckpointData
+{
+    public uint tick;
+    public Checkpoint point;
+}
 
 [DefaultExecutionOrder(10)]
 public class Controller : MonoBehaviour
@@ -15,6 +23,8 @@ public class Controller : MonoBehaviour
 
     protected uint tick = 0;
 
+    protected List<CheckpointData> checkpoints = new List<CheckpointData>();
+
     protected virtual void Awake()
     {
         character = GetComponent<Character>();
@@ -25,8 +35,27 @@ public class Controller : MonoBehaviour
         tick++;
     }
 
+    protected virtual void Finish()
+    {
+        // Nothing
+    }
+
     public void ActivateCheckpoint(Checkpoint checkpoint)
     {
-        Debug.Log("Checkpoint Wahoo!");
+        if (!checkpoints.Any(point => point.point == checkpoint))
+        {
+            CheckpointData data = new CheckpointData();
+            data.tick = tick;
+            data.point = checkpoint;
+            checkpoints.Add(data);
+        }
+    }
+
+    public void ActivateEndGate(EndGate gate)
+    {
+        if (checkpoints.Count >= gate.numCheckpoints)
+        {
+            Finish();
+        }
     }
 }

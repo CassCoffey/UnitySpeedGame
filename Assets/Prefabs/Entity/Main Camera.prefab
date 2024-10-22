@@ -153,6 +153,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   focus: {fileID: 0}
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 55
   focusPoint: {x: 0, y: 0, z: 0}
   previousFocusPoint: {x: 0, y: 0, z: 0}
   orbitAngles: {x: 45, y: 0}
@@ -171,7 +174,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170dab7793d6d054f9a076de9e07b29b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focus: {fileID: 0}
   focusRadius: 1
   focusCentering: 0.5
   rotationSpeed: 90
@@ -180,9 +182,6 @@ MonoBehaviour:
   alignDelay: 4
   alignSmoothRange: 45
   distance: 5
-  obstructionMask:
-    serializedVersion: 2
-    m_Bits: 23
 --- !u!114 &9021849689538796452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,13 +194,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01d202026744b464992f75045e5252c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focus: {fileID: 0}
   focusRadius: 1
   focusCentering: 0.5
   rotationSpeed: 1200
   distance: 5
   angle: 40
   angleThreshold: 30
-  obstructionMask:
-    serializedVersion: 2
-    m_Bits: 4294967295

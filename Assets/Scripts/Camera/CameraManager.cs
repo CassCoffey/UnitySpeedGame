@@ -4,6 +4,8 @@ public class CameraManager : MonoBehaviour
 {
     public Character focus = default;
 
+    public LayerMask obstructionMask = -1;
+
     private OrbitCamera orbitCam = default;
     private ChaseCamera chaseCam = default;
 

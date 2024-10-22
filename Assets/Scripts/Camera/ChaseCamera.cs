@@ -23,9 +23,6 @@ public class ChaseCamera : MonoBehaviour
     [SerializeField, Range(0f, 90f)]
     float angleThreshold = 30f;
 
-    [SerializeField]
-    LayerMask obstructionMask = -1;
-
     Vector3 surfaceNormal = Vector3.up;
 
     CameraManager manager = default;
@@ -62,7 +59,7 @@ public class ChaseCamera : MonoBehaviour
         Vector3 castDirection = castLine / castDistance;
 
         if (Physics.BoxCast(
-            castFrom, manager.CameraHalfExtends, castDirection, out RaycastHit hit, lookRotation, castDistance, obstructionMask
+            castFrom, manager.CameraHalfExtends, castDirection, out RaycastHit hit, lookRotation, castDistance, manager.obstructionMask
         ))
         {
             rectPosition = castFrom + castDirection * hit.distance;

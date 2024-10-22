@@ -26,9 +26,6 @@ public class OrbitCamera : MonoBehaviour
     [SerializeField, Range(1f, 20f)]
     float distance = 5f;
 
-    [SerializeField]
-    LayerMask obstructionMask = -1;
-
     InputAction lookAction;
 
     float lastManualRotationTime;
@@ -72,7 +69,7 @@ public class OrbitCamera : MonoBehaviour
         Vector3 castDirection = castLine / castDistance;
 
         if (Physics.BoxCast(
-            castFrom, manager.CameraHalfExtends, castDirection, out RaycastHit hit, lookRotation, castDistance, obstructionMask
+            castFrom, manager.CameraHalfExtends, castDirection, out RaycastHit hit, lookRotation, castDistance, manager.obstructionMask
         ))
         {
             rectPosition = castFrom + castDirection * hit.distance;

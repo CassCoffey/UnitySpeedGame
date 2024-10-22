@@ -11,16 +11,10 @@ public class GhostController : Controller
     private CharacterInputSet nextInputs;
     private bool repeatingInput = false;
 
-    protected override void Awake()
+    public void SetReplay(ReplayData replay)
     {
-        base.Awake();
-
-        replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
-        if (replay != null)
-        {
-            loadedData = true;
-            Debug.Log("Reading replay with length - " + replay.inputQueue.Count);
-        }
+        this.replay = replay;
+        loadedData = true;
     }
 
     protected override void FixedUpdate()

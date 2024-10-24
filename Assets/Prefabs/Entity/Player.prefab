@@ -490,6 +490,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   speedInputSpace: {fileID: 4602574236094641956}
   physicsMovementBody: {fileID: 1024085806708485016}
+  mainCollider: {fileID: 6718033169955707110}
   bodyVisual: {fileID: 6526417955492420177}
   SpeedMode: 0
   contactNormal: {x: 0, y: 0, z: 0}

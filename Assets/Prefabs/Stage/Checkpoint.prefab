@@ -189,6 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691662994ecc937479bed097bcf8c0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpointTrigger: {fileID: 8478349960500599130}
 --- !u!33 &1946782170824533364
 MeshFilter:
   m_ObjectHideFlags: 0

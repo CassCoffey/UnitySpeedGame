@@ -26,6 +26,7 @@ public class Character : MonoBehaviour
 
     public Transform speedInputSpace = default;
     public Rigidbody physicsMovementBody;
+    public Collider mainCollider;
     public Transform bodyVisual;
 
     private Vector3 facing = Vector3.forward;

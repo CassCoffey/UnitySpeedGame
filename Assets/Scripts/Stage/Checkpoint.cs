@@ -3,6 +3,8 @@ using UnityEngine;
 [DefaultExecutionOrder(150)]
 public class Checkpoint : MonoBehaviour
 {
+    public Collider checkpointTrigger;
+
     private void OnTriggerEnter(Collider other)
     {
         Transform player = other.transform.parent;
@@ -10,7 +12,7 @@ public class Checkpoint : MonoBehaviour
 
         if (controller != null)
         {
-            controller.ActivateCheckpoint(this);
+            controller.ActivateCheckpoint(this, checkpointTrigger);
         }
     }
 }

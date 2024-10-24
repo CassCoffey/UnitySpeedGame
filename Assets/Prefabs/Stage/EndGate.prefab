@@ -190,6 +190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numCheckpoints: 0
+  gateTrigger: {fileID: 3730385914683775867}
 --- !u!33 &6689416572125152049
 MeshFilter:
   m_ObjectHideFlags: 0

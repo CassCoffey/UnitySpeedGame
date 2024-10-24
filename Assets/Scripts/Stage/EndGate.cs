@@ -4,6 +4,7 @@ using UnityEngine;
 public class EndGate : MonoBehaviour
 {
     public int numCheckpoints;
+    public Collider gateTrigger;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -12,7 +13,7 @@ public class EndGate : MonoBehaviour
 
         if (controller != null)
         {
-            controller.ActivateEndGate(this);
+            controller.ActivateEndGate(this, gateTrigger);
         }
     }
 }

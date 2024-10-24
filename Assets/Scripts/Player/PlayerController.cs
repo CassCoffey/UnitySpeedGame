@@ -1,4 +1,5 @@
 using SpeedGame;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -124,9 +125,15 @@ public class PlayerController : Controller
         base.FixedUpdate();
     }
 
-    protected override void Finish()
+    protected override void Checkpoint(CheckpointData checkpointData)
     {
-        Debug.Log("Reached finish! Final ticks - " + tick);
+        Debug.Log("Checkpoint collected! Time - " + checkpointData.time.ToString(@"mm\:ss\.fff"));
+    }
+
+    protected override void Finish(EndGate gate, Collider gateTrigger)
+    {
+        replay.finishTime = UtilFunctions.GetTrueTriggerTime(character, gateTrigger, tick);
+        Debug.Log("Reached finish! Final time - " + replay.finishTime.ToString(@"mm\:ss\.fff"));
         ReplayFunctions.WriteReplay(replay);
     }
 }

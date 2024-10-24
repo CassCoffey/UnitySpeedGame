@@ -1,3 +1,5 @@
+using SpeedGame;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,6 +7,7 @@ using UnityEngine;
 public struct CheckpointData
 {
     public uint tick;
+    public TimeSpan time;
     public Checkpoint point;
 }
 
@@ -35,27 +38,34 @@ public class Controller : MonoBehaviour
         tick++;
     }
 
-    protected virtual void Finish()
+    protected virtual void Checkpoint(CheckpointData checkpointData)
     {
         // Nothing
     }
 
-    public void ActivateCheckpoint(Checkpoint checkpoint)
+    protected virtual void Finish(EndGate gate, Collider gateTrigger)
+    {
+        // Nothing
+    }
+
+    public void ActivateCheckpoint(Checkpoint checkpoint, Collider checkpointTrigger)
     {
         if (!checkpoints.Any(point => point.point == checkpoint))
         {
             CheckpointData data = new CheckpointData();
             data.tick = tick;
+            data.time = UtilFunctions.GetTrueTriggerTime(character, checkpointTrigger, tick);
             data.point = checkpoint;
             checkpoints.Add(data);
+            Checkpoint(data);
         }
     }
 
-    public void ActivateEndGate(EndGate gate)
+    public void ActivateEndGate(EndGate gate, Collider gateTrigger)
     {
         if (checkpoints.Count >= gate.numCheckpoints)
         {
-            Finish();
+            Finish(gate, gateTrigger);
         }
     }
 }

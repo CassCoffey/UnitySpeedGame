@@ -9,6 +9,8 @@ namespace SpeedGame
 {
     public class ReplayData
     {
+        public TimeSpan finishTime;
+
         public Queue<CharacterInputSet> inputQueue;
     }
 
@@ -84,6 +86,10 @@ namespace SpeedGame
             {
                 using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
                 {
+                    // Write Header
+                    writer.Write(replay.finishTime.Ticks);
+
+                    // Write Input Queue
                     while (replay.inputQueue.Count > 0)
                     {
                         writer.Write(ToBinary(replay.inputQueue.Dequeue()));
@@ -106,6 +112,8 @@ namespace SpeedGame
                 {
                     using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                     {
+                        result.finishTime = new TimeSpan(reader.ReadInt64());
+
                         while (reader.BaseStream.Position != reader.BaseStream.Length)
                         {
                             byte[] bytes = reader.ReadBytes(Marshal.SizeOf(typeof(CharacterInputSet)));

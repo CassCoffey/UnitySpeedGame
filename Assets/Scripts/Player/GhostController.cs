@@ -59,7 +59,7 @@ public class GhostController : Controller
         base.FixedUpdate();
     }
 
-    protected override void Finish()
+    protected override void Finish(EndGate gate, Collider gateTrigger)
     {
         Debug.Log("Ghost Reached at tick - " + tick);
     }

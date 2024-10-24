@@ -64,6 +64,8 @@ public class StageManager : MonoBehaviour
         LoadStageData();
 
         gate.BeginStage();
+
+        HUDManager.UpdateMedalDisplay();
     }
 
     private void LoadStageData()

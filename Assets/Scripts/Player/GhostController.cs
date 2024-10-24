@@ -61,6 +61,6 @@ public class GhostController : Controller
 
     protected override void Finish(EndGate gate, Collider gateTrigger)
     {
-        Debug.Log("Ghost Reached at tick - " + tick);
+        // Done
     }
 }

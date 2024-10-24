@@ -48,9 +48,15 @@ namespace SpeedGame
         public static bool operator !=(CharacterInputSet lhs, CharacterInputSet rhs) => !(lhs == rhs);
     }
 
+    public enum ReplayTypes
+    {
+        PersonalBest,
+        AuthorTime,
+    }
+
     public static class ReplayFunctions
     {
-        unsafe public static byte[] ToBinary(CharacterInputSet inputs)
+        public static byte[] ToBinary(CharacterInputSet inputs)
         {
             int size = Marshal.SizeOf(inputs);
             byte[] result = new byte[size];
@@ -70,17 +76,9 @@ namespace SpeedGame
             return result;
         }
 
-        public static void WriteReplay(ReplayData replay)
+        public static void WriteReplay(string fileName, ReplayData replay)
         {
-            string path = Path.Combine(Application.persistentDataPath, "data");
-            string fileName = "CurrentReplay.replay";
-            path = Path.Combine(path, fileName);
-
-            //Create Directory if it does not exist
-            if (!Directory.Exists(Path.GetDirectoryName(path)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
+            string path = Path.Combine(GetReplayFilepath(), fileName);
 
             using (var stream = File.Open(path, FileMode.Create))
             {
@@ -98,13 +96,12 @@ namespace SpeedGame
             }
         }
 
-        unsafe public static ReplayData ReadReplay(string fileName)
+        public static ReplayData ReadReplay(string fileName)
         {
             ReplayData result = new ReplayData();
             result.inputQueue = new Queue<CharacterInputSet>();
 
-            string path = Path.Combine(Application.persistentDataPath, "data");
-            path = Path.Combine(path, fileName);
+            string path = Path.Combine(GetReplayFilepath(), fileName);
 
             if (File.Exists(path))
             {
@@ -127,9 +124,31 @@ namespace SpeedGame
                         }
                     }
                 }
+            } 
+            else
+            {
+                return null;
             }
 
             return result;
+        }
+
+        public static string GetReplayFilename(string user, string stage, uint id, ReplayTypes type)
+        {
+            return $"{user}_{stage}{id}_{type}";
+        }
+
+        public static string GetReplayFilepath()
+        {
+            string path = Path.Combine(Application.persistentDataPath, @"data\replays");
+
+            //Create Directory if it does not exist
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            return path;
         }
     }
 }

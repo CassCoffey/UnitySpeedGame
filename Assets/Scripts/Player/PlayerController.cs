@@ -134,6 +134,6 @@ public class PlayerController : Controller
     {
         replay.finishTime = UtilFunctions.GetTrueTriggerTime(character, gateTrigger, tick);
         Debug.Log("Reached finish! Final time - " + replay.finishTime.ToString(@"mm\:ss\.fff"));
-        ReplayFunctions.WriteReplay(replay);
+        StageManager.SaveNewPersonalBest(replay);
     }
 }

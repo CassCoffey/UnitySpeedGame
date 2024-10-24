@@ -8,11 +8,12 @@ public class StartGate : MonoBehaviour
     public GameObject Character;
     public GameObject Camera;
 
-    void Awake()
+    public void BeginStage()
     {
         SpawnPlayer();
-        SpawnGhost();
-        StartCoroutine(SpawnGhostDelay(3));
+        SpawnGhost(StageManager.CurrentAuthorReplay());
+        SpawnGhost(StageManager.CurrentUserBestTime());
+        //StartCoroutine(SpawnGhostDelay(3));
     }
 
     void SpawnPlayer()
@@ -24,9 +25,8 @@ public class StartGate : MonoBehaviour
         camera.GetComponent<CameraManager>().focus = player.GetComponent<Character>();
     }
 
-    void SpawnGhost()
+    void SpawnGhost(ReplayData replay)
     {
-        ReplayData replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
         if (replay != null)
         {
             Debug.Log("Reading replay with length - " + replay.inputQueue.Count);
@@ -34,6 +34,11 @@ public class StartGate : MonoBehaviour
             GhostController controller = ghost.AddComponent<GhostController>();
             controller.SetReplay(replay);
         }
+    }
+
+    void SpawnGhost(string fileName)
+    {
+        SpawnGhost(ReplayFunctions.ReadReplay(fileName));
     }
 
     IEnumerator SpawnGhostDelay(float delayTime)

@@ -65,7 +65,7 @@ public class StageManager : MonoBehaviour
 
         gate.BeginStage();
 
-        HUDManager.UpdateMedalDisplay();
+        HUDManager.Init();
     }
 
     private void LoadStageData()
@@ -82,9 +82,14 @@ public class StageManager : MonoBehaviour
         return Instance.currentStageData.authorGhost;
     }
 
-    public static ReplayData CurrentUserBestTime()
+    public static ReplayData CurrentPersonalReplay()
     {
         return Instance.personalBest;
+    }
+
+    public static StageData CurrentStageData()
+    {
+        return Instance.currentStageData;
     }
 
     public static void SaveNewPersonalBest(ReplayData replay)

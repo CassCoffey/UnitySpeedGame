@@ -12,7 +12,7 @@ public class StartGate : MonoBehaviour
     {
         SpawnPlayer();
         SpawnGhost(StageManager.CurrentAuthorReplay());
-        SpawnGhost(StageManager.CurrentUserBestTime());
+        SpawnGhost(StageManager.CurrentPersonalReplay());
         //StartCoroutine(SpawnGhostDelay(3));
     }
 

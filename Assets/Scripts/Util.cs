@@ -28,6 +28,13 @@ namespace SpeedGame
             return realTicks;
         }
 
+        public static TimeSpan TickToTimespan(uint tick)
+        {
+            long result = ConvertGameToDatetimeTicks(tick);
+
+            return new TimeSpan(result);
+        }
+
         public static TimeSpan GetTrueTriggerTime(Character character, Collider trigger, uint tick)
         {
             long currentTick = ConvertGameToDatetimeTicks(tick);

@@ -122,12 +122,15 @@ public class PlayerController : Controller
         buttonMask = 0b00000000;
         previousInputs = inputs;
 
+        HUDManager.UpdateSpeed(character.physicsMovementBody.linearVelocity.magnitude);
+        HUDManager.UpdateTime(tick);
+
         base.FixedUpdate();
     }
 
     protected override void Checkpoint(CheckpointData checkpointData)
     {
-        Debug.Log("Checkpoint collected! Time - " + checkpointData.time.ToString(@"mm\:ss\.fff"));
+        HUDManager.UpdateCheckpoint(checkpointData);
     }
 
     protected override void Finish(EndGate gate, Collider gateTrigger)

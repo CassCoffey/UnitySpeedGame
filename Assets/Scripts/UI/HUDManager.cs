@@ -1,5 +1,6 @@
 using SpeedGame;
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,9 @@ using UnityEngine.UI;
 public class HUDManager : MonoBehaviour
 {
     public Transform MedalsPanel;
+    public Transform SpeedometerPanel;
+    public Transform TimerPanel;
+    public Transform CheckpointPanel;
 
     [HideInInspector]
     public static HUDManager Instance;
@@ -18,6 +22,7 @@ public class HUDManager : MonoBehaviour
 
     public static void Init()
     {
+        Instance.CheckpointPanel.gameObject.SetActive(false);
         Instance.UpdateMedalTimes();
     }
 
@@ -82,5 +87,46 @@ public class HUDManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public static void UpdateSpeed(float velocity)
+    {
+        int speed = (int)Mathf.Round(velocity);
+
+        Transform SpeedometerNumber = Instance.SpeedometerPanel.Find("Number");
+        SpeedometerNumber.GetComponent<TextMeshProUGUI>().text = speed.ToString();
+    }
+
+    public static void UpdateTime(uint tick)
+    {
+        string time = UtilFunctions.TickToTimespan(tick).ToString(@"mm\:ss\.ff");
+
+        Transform TimeText = Instance.TimerPanel.Find("Text");
+        TimeText.GetComponent<TextMeshProUGUI>().text = time;
+    }
+
+    public static void UpdateCheckpoint(CheckpointData data)
+    {
+        Instance.UpdateAndDisplayCheckpoint(data);
+    }
+
+    public void UpdateAndDisplayCheckpoint(CheckpointData data)
+    {
+        Transform TimeText = Instance.CheckpointPanel.Find("TimePanel").Find("Text");
+        TimeText.GetComponent<TextMeshProUGUI>().text = data.time.ToString(@"mm\:ss\.fff");
+
+        Transform SpeedText = Instance.CheckpointPanel.Find("SpeedPanel").Find("Text");
+        SpeedText.GetComponent<TextMeshProUGUI>().text = data.speed.ToString("n2") + " mph";
+
+        StartCoroutine(DisplayCheckpointPanel(1));
+    }
+
+    IEnumerator DisplayCheckpointPanel(float seconds)
+    {
+        CheckpointPanel.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(seconds);
+
+        CheckpointPanel.gameObject.SetActive(false);
     }
 }

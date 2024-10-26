@@ -9,6 +9,7 @@ public struct CheckpointData
     public uint tick;
     public TimeSpan time;
     public Checkpoint point;
+    public float speed;
 }
 
 [DefaultExecutionOrder(10)]
@@ -56,6 +57,7 @@ public class Controller : MonoBehaviour
             data.tick = tick;
             data.time = UtilFunctions.GetTrueTriggerTime(character, checkpointTrigger, tick);
             data.point = checkpoint;
+            data.speed = character.physicsMovementBody.linearVelocity.magnitude;
             checkpoints.Add(data);
             Checkpoint(data);
         }

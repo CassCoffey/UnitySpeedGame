@@ -64,19 +64,19 @@ public class HUDManager : MonoBehaviour
             if (StageManager.CurrentAuthorReplay() != null)
             {
                 // Find personal rank compared to medals
-                if (PersonalTime > AuthorTime)
+                if (PersonalTime < AuthorTime)
                 {
                     Personal.SetSiblingIndex(0);
                 }
-                else if (PersonalTime > GoldTime)
+                else if (PersonalTime < GoldTime)
                 {
                     Personal.SetSiblingIndex(1);
                 }
-                else if (PersonalTime > SilverTime)
+                else if (PersonalTime < SilverTime)
                 {
                     Personal.SetSiblingIndex(2);
                 }
-                else if (PersonalTime > BronzeTime)
+                else if (PersonalTime < BronzeTime)
                 {
                     Personal.SetSiblingIndex(3);
                 }

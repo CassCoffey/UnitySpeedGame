@@ -15,8 +15,7 @@ public struct CheckpointData
 [DefaultExecutionOrder(10)]
 public class Controller : MonoBehaviour
 {
-    public static byte JumpPressedMask = 0b00000001;
-    public static byte JumpReleasedMask = 0b00000010;
+    public static byte JumpMask = 0b00000001;
     public static byte AccelerateMask = 0b00000100;
     public static byte BrakeMask = 0b00001000;
 

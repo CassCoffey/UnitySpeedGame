@@ -52,7 +52,11 @@ public class Character : MonoBehaviour
     private bool acceleratePressed, brakePressed = false;
     private bool jumpPressed = false;
     private bool jumpReleased = false;
+    private bool jumpPrevious = false;
     private float steerValue = 0f;
+
+    private bool checkpointResetPressedPrev = false;
+    private int checkpointResetPressTicks = 0;
 
     private void Awake()
     {
@@ -100,11 +104,21 @@ public class Character : MonoBehaviour
     {
         moveValue = new Vector2((float)inputs.MoveValueX / 100f, (float)inputs.MoveValueY / 100f);
 
-        jumpPressed = (inputs.ButtonMask & Controller.JumpPressedMask) == Controller.JumpPressedMask;
-        jumpReleased = (inputs.ButtonMask & Controller.JumpReleasedMask) == Controller.JumpReleasedMask;
+        bool jump = (inputs.ButtonMask & Controller.JumpMask) == Controller.JumpMask;
         acceleratePressed = (inputs.ButtonMask & Controller.AccelerateMask) == Controller.AccelerateMask;
         brakePressed = (inputs.ButtonMask & Controller.BrakeMask) == Controller.BrakeMask;
         steerValue = (float)inputs.SteerValue / 100f;
+
+        if (jump && !jumpPrevious)
+        {
+            jumpPressed = true;
+        }
+        else if (!jump && jumpPrevious)
+        {
+            jumpReleased = true;
+        }
+
+        jumpPrevious = jump;
     }
 
     private void ResetInputs()

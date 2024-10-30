@@ -56,17 +56,12 @@ public class PlayerController : Controller
             buttonMask |= BrakeMask;
         }
 
-        if (jumpAction.WasPerformedThisFrame())
+        if (jumpAction.IsPressed())
         {
-            buttonMask |= JumpPressedMask;
+            buttonMask |= JumpMask;
         }
 
-        if (jumpAction.WasCompletedThisFrame())
-        {
-            buttonMask |= JumpReleasedMask;
-        }
-
-        if (checkpointResetAction.WasPerformedThisFrame())
+        if (checkpointResetAction.IsPressed())
         {
             buttonMask |= CheckpointResetMask;
         }

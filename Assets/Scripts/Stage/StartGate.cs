@@ -53,7 +53,7 @@ public class StartGate : MonoBehaviour
     {
         if (replay != null)
         {
-            Debug.Log("Reading replay with length - " + replay.inputQueue.Count);
+            Debug.Log("Reading replay with length - " + replay.inputList.Count);
             GameObject ghost = Instantiate(Character, Vector3.zero, Quaternion.identity);
             GhostController controller = ghost.AddComponent<GhostController>();
             controller.SetReplay(replay);
@@ -74,7 +74,7 @@ public class StartGate : MonoBehaviour
         ReplayData replay = ReplayFunctions.ReadReplay("CurrentReplay.replay");
         if (replay != null)
         {
-            Debug.Log("Reading replay with length - " + replay.inputQueue.Count);
+            Debug.Log("Reading replay with length - " + replay.inputList.Count);
             GameObject ghost = Instantiate(Character, new Vector3(0, 0, 0), Quaternion.identity);
             GhostController controller = ghost.AddComponent<GhostController>();
             controller.SetReplay(replay);

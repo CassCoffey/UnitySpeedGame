@@ -41,13 +41,13 @@ public class PlayerController : Controller
         fullResetAction = InputSystem.actions.FindAction("Full Reset");
 
         replay = new ReplayData();
-        replay.inputQueue = new Queue<CharacterInputSet>();
+        replay.inputList = new List<CharacterInputSet>();
     }
 
     public override void Reset()
     {
         replay = new ReplayData();
-        replay.inputQueue = new Queue<CharacterInputSet>();
+        replay.inputList = new List<CharacterInputSet>();
 
         buttonMask = 0b00000000;
 
@@ -120,9 +120,9 @@ public class PlayerController : Controller
         {
             character.UpdateInputs(inputs);
 
-            if (replay.inputQueue != null)
+            if (replay.inputList != null)
             {
-                replay.inputQueue.Enqueue(inputs);
+                replay.inputList.Add(inputs);
             }
         }
 

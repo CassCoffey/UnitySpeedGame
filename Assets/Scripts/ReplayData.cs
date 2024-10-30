@@ -11,7 +11,9 @@ namespace SpeedGame
     {
         public TimeSpan finishTime;
 
-        public Queue<CharacterInputSet> inputQueue;
+        public int index = 0;
+
+        public List<CharacterInputSet> inputList;
     }
 
     public struct CharacterInputSet : IEquatable<CharacterInputSet>
@@ -88,9 +90,9 @@ namespace SpeedGame
                     writer.Write(replay.finishTime.Ticks);
 
                     // Write Input Queue
-                    while (replay.inputQueue.Count > 0)
+                    for (int i = 0; i < replay.inputList.Count; i++)
                     {
-                        writer.Write(ToBinary(replay.inputQueue.Dequeue()));
+                        writer.Write(ToBinary(replay.inputList[i]));
                     }
                 }
             }
@@ -99,7 +101,7 @@ namespace SpeedGame
         public static ReplayData ReadReplay(string fileName)
         {
             ReplayData result = new ReplayData();
-            result.inputQueue = new Queue<CharacterInputSet>();
+            result.inputList = new List<CharacterInputSet>();
 
             string path = Path.Combine(GetReplayFilepath(), fileName);
 
@@ -120,7 +122,7 @@ namespace SpeedGame
                             CharacterInputSet inputs = (CharacterInputSet)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(CharacterInputSet));
                             handle.Free();
 
-                            result.inputQueue.Enqueue(inputs);
+                            result.inputList.Add(inputs);
                         }
                     }
                 }

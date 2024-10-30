@@ -68,6 +68,11 @@ public class StageManager : MonoBehaviour
         HUDManager.Init();
     }
 
+    public static void FullReset()
+    {
+        Instance.gate.ResetStage();
+    }
+
     private void LoadStageData()
     {
         // just make this up for now

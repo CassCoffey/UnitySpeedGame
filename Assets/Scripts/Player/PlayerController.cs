@@ -44,6 +44,18 @@ public class PlayerController : Controller
         replay.inputQueue = new Queue<CharacterInputSet>();
     }
 
+    public override void Reset()
+    {
+        replay = new ReplayData();
+        replay.inputQueue = new Queue<CharacterInputSet>();
+
+        buttonMask = 0b00000000;
+
+        previousInputs = default;
+
+        base.Reset();
+    }
+
     void Update()
     {
         if (accelerateAction.IsPressed())

@@ -38,6 +38,13 @@ public class Controller : MonoBehaviour
         tick++;
     }
 
+    public virtual void Reset()
+    {
+        tick = 0;
+        checkpoints = new List<CheckpointData>();
+        character.Reset();
+    }
+
     protected virtual void Checkpoint(CheckpointData checkpointData)
     {
         // Nothing

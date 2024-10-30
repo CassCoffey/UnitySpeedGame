@@ -68,6 +68,23 @@ public class Character : MonoBehaviour
         minGroundDotProduct = Mathf.Cos(platformingMaxGroundAngle * Mathf.Deg2Rad);
     }
 
+    public void Reset()
+    {
+        SpeedMode = false;
+
+        facing = Vector3.forward;
+        contactNormal = steepNormal = Vector3.zero;
+
+        physicsMovementBody.linearVelocity = Vector3.zero;
+        moveValue = Vector2.zero;
+        acceleratePressed = brakePressed = false;
+        jumpPressed = jumpReleased = jumpPrevious = false;
+        steerValue = 0f;
+
+        jumpPhase = 0;
+        stepsSinceLastGrounded = stepsSinceLastJump = 0;
+}
+
     private void FixedUpdate()
     {
         UpdateState();
@@ -119,6 +136,11 @@ public class Character : MonoBehaviour
         }
 
         jumpPrevious = jump;
+
+        if ((inputs.ButtonMask & Controller.FullResetMask) == Controller.FullResetMask)
+        {
+            StageManager.FullReset();
+        }
     }
 
     private void ResetInputs()

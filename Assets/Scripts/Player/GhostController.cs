@@ -5,6 +5,7 @@ using UnityEngine;
 public class GhostController : Controller
 {
     private ReplayData replay;
+    private ReplayData originalReplay;
     private bool loadedData = false;
 
     private CharacterInputSet previousInputs;
@@ -14,7 +15,19 @@ public class GhostController : Controller
     public void SetReplay(ReplayData replay)
     {
         this.replay = replay;
+        originalReplay = replay;
         loadedData = true;
+    }
+
+    public override void Reset()
+    {
+        replay = originalReplay;
+        previousInputs = nextInputs = default;
+        repeatingInput = false;
+
+        loadedData = true;
+
+        base.Reset();
     }
 
     protected override void FixedUpdate()

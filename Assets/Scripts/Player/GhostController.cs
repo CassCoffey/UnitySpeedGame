@@ -7,8 +7,6 @@ public class GhostController : Controller
     private ReplayData replay;
     private bool loadedData = false;
 
-    private CharacterInputSet previousInputs;
-
     public void SetReplay(ReplayData replay)
     {
         this.replay = replay;
@@ -18,7 +16,6 @@ public class GhostController : Controller
     public override void Reset()
     {
         replay.index = 0;
-        previousInputs = default;
 
         loadedData = true;
 
@@ -39,13 +36,19 @@ public class GhostController : Controller
             if (inputs.Tick == tick) 
             {
                 character.UpdateInputs(inputs);
-                previousInputs = inputs;
 
                 replay.index++;
             }
             else
             {
-                character.UpdateInputs(previousInputs);
+                if (replay.index > 0)
+                {
+                    character.UpdateInputs(replay.inputList[replay.index - 1]);
+                }
+                else
+                {
+                    character.UpdateInputs(default);
+                }
             }
         }
         else

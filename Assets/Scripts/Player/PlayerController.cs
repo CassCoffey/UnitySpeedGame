@@ -73,7 +73,7 @@ public class PlayerController : Controller
             buttonMask |= JumpMask;
         }
 
-        if (checkpointResetAction.IsPressed())
+        if (checkpointResetAction.WasPerformedThisFrame())
         {
             buttonMask |= CheckpointResetMask;
         }
@@ -84,7 +84,7 @@ public class PlayerController : Controller
         }
     }
 
-    protected override void FixedUpdate()
+    private void FixedUpdate()
     {
         Vector3 upAxis = CustomGravity.GetUpAxis(transform.position);
 
@@ -130,9 +130,7 @@ public class PlayerController : Controller
         previousInputs = inputs;
 
         HUDManager.UpdateSpeed(character.physicsMovementBody.linearVelocity.magnitude);
-        HUDManager.UpdateTime(tick);
-
-        base.FixedUpdate();
+        HUDManager.UpdateTime(StageManager.Tick);
     }
 
     protected override void Checkpoint(CheckpointData checkpointData)
@@ -142,7 +140,7 @@ public class PlayerController : Controller
 
     protected override void Finish(EndGate gate, Collider gateTrigger)
     {
-        replay.finishTime = UtilFunctions.GetTrueTriggerTime(character, gateTrigger, tick);
+        replay.finishTime = UtilFunctions.GetTrueTriggerTime(character, gateTrigger, StageManager.Tick);
         Debug.Log("Reached finish! Final time - " + replay.finishTime.ToString(@"mm\:ss\.fff"));
         StageManager.SaveNewPersonalBest(replay);
     }

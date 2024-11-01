@@ -22,7 +22,7 @@ public class GhostController : Controller
         base.Reset();
     }
 
-    protected override void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!loadedData)
         {
@@ -33,7 +33,7 @@ public class GhostController : Controller
         {
             CharacterInputSet inputs = replay.inputList[replay.index];
 
-            if (inputs.Tick == tick) 
+            if (inputs.Tick == StageManager.Tick) 
             {
                 character.UpdateInputs(inputs);
 
@@ -56,8 +56,6 @@ public class GhostController : Controller
             // Replay is done
             loadedData = false;
         }
-
-        base.FixedUpdate();
     }
 
     protected override void Finish(EndGate gate, Collider gateTrigger)

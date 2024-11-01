@@ -55,8 +55,7 @@ public class Character : MonoBehaviour
     private bool jumpPrevious = false;
     private float steerValue = 0f;
 
-    private bool checkpointResetPressedPrev = false;
-    private int checkpointResetPressTicks = 0;
+    private uint checkpointResetPressTick = 0;
 
     private void Awake()
     {
@@ -140,6 +139,12 @@ public class Character : MonoBehaviour
         if ((inputs.ButtonMask & Controller.FullResetMask) == Controller.FullResetMask)
         {
             StageManager.FullReset();
+        } 
+        else if ((inputs.ButtonMask & Controller.CheckpointResetMask) == Controller.CheckpointResetMask) 
+        {
+            // Checkpoint Reset
+            // need to set the current tick to check for a future double-press
+            checkpointResetPressTick = StageManager.Tick;
         }
     }
 

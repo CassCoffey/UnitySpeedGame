@@ -24,8 +24,6 @@ public class Controller : MonoBehaviour
 
     protected Character character = null;
 
-    protected uint tick = 0;
-
     protected List<CheckpointData> checkpoints = new List<CheckpointData>();
 
     protected virtual void Awake()
@@ -33,14 +31,8 @@ public class Controller : MonoBehaviour
         character = GetComponent<Character>();
     }
 
-    protected virtual void FixedUpdate()
-    {
-        tick++;
-    }
-
     public virtual void Reset()
     {
-        tick = 0;
         checkpoints = new List<CheckpointData>();
         character.Reset();
     }
@@ -60,8 +52,8 @@ public class Controller : MonoBehaviour
         if (!checkpoints.Any(point => point.point == checkpoint))
         {
             CheckpointData data = new CheckpointData();
-            data.tick = tick;
-            data.time = UtilFunctions.GetTrueTriggerTime(character, checkpointTrigger, tick);
+            data.tick = StageManager.Tick;
+            data.time = UtilFunctions.GetTrueTriggerTime(character, checkpointTrigger, StageManager.Tick);
             data.point = checkpoint;
             data.speed = character.physicsMovementBody.linearVelocity.magnitude;
             checkpoints.Add(data);

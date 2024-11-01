@@ -30,6 +30,7 @@ public struct StageData
     }
 }
 
+[DefaultExecutionOrder(100)]
 public class StageManager : MonoBehaviour
 {
     [HideInInspector]
@@ -37,6 +38,9 @@ public class StageManager : MonoBehaviour
 
     [HideInInspector]
     public static string UserName = "TestUser";
+
+    [HideInInspector]
+    public static uint Tick = 0;
 
     private ReplayData personalBest;
 
@@ -70,7 +74,13 @@ public class StageManager : MonoBehaviour
 
     public static void FullReset()
     {
+        Tick = 0;
         Instance.gate.ResetStage();
+    }
+
+    private void LateUpdate()
+    {
+        Tick++;
     }
 
     private void LoadStageData()

@@ -143,7 +143,6 @@ public class Character : MonoBehaviour
         else if ((inputs.ButtonMask & Controller.CheckpointResetMask) == Controller.CheckpointResetMask) 
         {
             // Checkpoint Reset
-            // need to set the current tick to check for a future double-press
             checkpointResetPressTick = StageManager.Tick;
         }
     }

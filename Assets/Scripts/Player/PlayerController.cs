@@ -114,7 +114,7 @@ public class PlayerController : Controller
         sbyte moveValueX = (sbyte)Mathf.RoundToInt(moveValue.x * 100f);
         sbyte moveValueY = (sbyte)Mathf.RoundToInt(moveValue.y * 100f);
 
-        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, buttonMask, steerValue, tick);
+        CharacterInputSet inputs = new CharacterInputSet(moveValueX, moveValueY, buttonMask, steerValue, StageManager.Tick);
 
         if (previousInputs != inputs)
         {

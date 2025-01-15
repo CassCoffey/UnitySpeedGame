@@ -78,7 +78,7 @@ public class StageManager : MonoBehaviour
         Instance.gate.ResetStage();
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         Tick++;
     }
